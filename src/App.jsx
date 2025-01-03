@@ -1,8 +1,20 @@
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router";
+import Dashboard from './components/Dashboard';
+import Layout from './components/shared/Layout';
+import Products from './components/Products';
 
 function App() {
   return (
-    <><h1>hii</h1>
+    <>
+      <Router>
+        <Routes>
+          <Route path='/' element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path='products' element={<Products />} />
+          </Route>
+          <Route path='login' element={<div>This is login page</div>} />
+        </Routes>
+      </Router>
     </>
   )
 }
