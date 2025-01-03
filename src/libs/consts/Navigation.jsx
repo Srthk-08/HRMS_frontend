@@ -1,11 +1,7 @@
 import {
   HiOutlineViewGrid,
   HiOutlineCube,
-  HiOutlineShoppingCart,
   HiOutlineUsers,
-  HiOutlineDocumentText,
-  HiOutlineAnnotation,
-  HiOutlineQuestionMarkCircle,
   HiOutlineCog,
   HiOutlineUser,
   HiOutlinePencil,
