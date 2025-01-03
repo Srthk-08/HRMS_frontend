@@ -5,7 +5,7 @@ export default function Dashboard() {
   return (
     <div>
       <p>This is Dashboard</p>
-      <Link to="/products" className='underline'>go to products</Link>
+      <Link to="/apps/contacts" className='underline'>go to contacts</Link>
     </div>
   )
 }
