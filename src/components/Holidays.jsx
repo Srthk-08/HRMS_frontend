@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { HiOutlineDotsVertical } from 'react-icons/hi';
+import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
+import { GiCancel } from "react-icons/gi";
 
 export default function Holidays() {
   // State to store holidays and form inputs
@@ -64,10 +66,13 @@ export default function Holidays() {
     <div className="p-6">
       {/* Header with flexbox layout */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-semibold text-gray-800">Holidays</h1>
+        <div className='flex flex-col gap-3'>
+          <h1 className="text-3xl font-semibold text-gray-800">Holidays</h1>
+          <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Holidays</h1>
+        </div>
         <button
           onClick={() => setIsFormVisible(true)}
-          className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200 ease-in-out"
+          className="px-6 py-3 bg-slate-700 text-white rounded-md hover:bg-slate-900 transition duration-200 ease-in-out"
         >
           Add Holiday
         </button>
@@ -76,7 +81,7 @@ export default function Holidays() {
       {/* Popover Modal for Form */}
       {isFormVisible && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300 ease-in-out opacity-0" style={{ opacity: 1 }}>
-          <div className="bg-white p-6 rounded-md shadow-lg w-96 transform transition-all duration-300 scale-95 hover:scale-100">
+          <div className="bg-white p-6 rounded-md shadow-lg w-96 transform transition-all duration-300 scale-95 hover:scale-100 relative">
             <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">{selectedHolidayIndex !== null ? 'Edit Holiday' : 'Add New Holiday'}</h2>
             <form onSubmit={saveHoliday}>
               <div className="mb-4">
@@ -106,16 +111,16 @@ export default function Holidays() {
               <div className="flex justify-between items-center">
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200 ease-in-out"
+                  className="px-6 py-2 bg-slate-500 text-white rounded-md hover:bg-slate-600 transition duration-200 ease-in-out"
                 >
                   {selectedHolidayIndex !== null ? 'Update Holiday' : 'Add Holiday'}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsFormVisible(false)}
-                  className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200 ease-in-out"
+                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer z-60"
                 >
-                  Cancel
+                  <GiCancel size={24} />
                 </button>
               </div>
             </form>
@@ -147,29 +152,17 @@ export default function Holidays() {
                   <td className="py-3 px-4">{holiday.day}</td>
                   <td className="py-3 px-4 relative">
                     <button
-                      onClick={() => toggleDropdown(index)}
-                      className="text-gray-600 hover:text-black transition duration-200 ease-in-out"
+                      onClick={() => editHoliday(index)}
+                      className="text-gray-600 hover:text-blue-600 transition duration-200 ease-in-out"
                     >
-                      <HiOutlineDotsVertical />
+                      <HiOutlinePencilAlt />
                     </button>
-
-                    {/* Dropdown Menu with animation */}
-                    {dropdownVisibleIndex === index && (
-                      <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-md w-32 border transition-transform transform origin-top-right">
-                        <button
-                          onClick={() => editHoliday(index)}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => deleteHoliday(index)}
-                          className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
+                    <button
+                      onClick={() => deleteHoliday(index)}
+                      className="ml-4 text-gray-600 hover:text-red-600 transition duration-200 ease-in-out"
+                    >
+                      <HiOutlineTrash />
+                    </button>
                   </td>
                 </tr>
               ))

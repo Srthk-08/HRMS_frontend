@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { HiOutlineDotsVertical } from 'react-icons/hi'; // Import the icon
+import { Link } from 'react-router-dom';
+import { GiCancel } from "react-icons/gi";
 
 export default function AllEmployee() {
   const [employees, setEmployees] = useState([]);
@@ -144,13 +146,13 @@ export default function AllEmployee() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">Employee List</h1>
-
+      <h1 className="text-2xl font-semibold mb-4">Employees</h1>
+      <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Employee</h1>
       {/* Add Employee and Filter Section */}
       <div className="mb-4 flex flex-wrap justify-between items-center">
         <button
           onClick={() => setIsFormVisible(true)}
-          className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          className="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-900"
         >
           Add Employee
         </button>
@@ -166,7 +168,7 @@ export default function AllEmployee() {
           />
           <button
             onClick={applyFilter}
-            className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            className="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-900"
           >
             Apply Filter
           </button>
@@ -229,7 +231,14 @@ export default function AllEmployee() {
       {/* Employee Details Modal */}
       {isModalVisible && selectedEmployee && (
         <div className="absolute inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white w-11/12 max-w-4xl p-6 rounded-md shadow-lg transform transition-all duration-500 ease-in-out scale-95 opacity-0 animate-fadeIn">
+          <div className="bg-white w-11/12 max-w-4xl p-6 rounded-md shadow-lg transform transition-all duration-500 ease-in-out scale-95 opacity-0 animate-fadeIn relative">
+            {/* Cancel Icon to Close Modal */}
+            <GiCancel
+              onClick={closeEmployeeModal}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer z-60"
+              size={24}
+            />
+
             {/* Display Employee Profile Picture at the Top */}
             {selectedEmployee.employeeImage && (
               <img
@@ -266,24 +275,19 @@ export default function AllEmployee() {
                 </div>
               )}
             </div>
-
-            <div className="mt-6 text-right">
-              <button
-                onClick={closeEmployeeModal}
-                className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-              >
-                Close
-              </button>
-            </div>
           </div>
         </div>
       )}
 
-
       {/* Popover Form to Add Employee */}
       {isFormVisible && (
         <div className="absolute inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white w-11/12 max-w-4xl p-6 rounded-md shadow-lg">
+          <div className="bg-white w-11/12 max-w-4xl p-6 rounded-md relative">
+            <GiCancel
+              onClick={() => setIsFormVisible(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer z-60"
+              size={24}
+            />
             <h2 className="text-xl font-semibold mb-4">Add Employee</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-h-96 overflow-y-scroll">
               {/* Employee form fields */}
@@ -631,13 +635,7 @@ export default function AllEmployee() {
                 onClick={handleAddEmployee}
                 className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
               >
-                Add Employee
-              </button>
-              <button
-                onClick={() => setIsFormVisible(false)}
-                className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 ml-4"
-              >
-                Cancel
+                Submit
               </button>
             </div>
           </div>

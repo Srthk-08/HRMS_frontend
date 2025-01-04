@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';
 import { GiCancel } from "react-icons/gi";
+import { Link } from 'react-router-dom';
 
 export default function Contacts() {
   const [contacts, setContacts] = useState([]);
@@ -100,7 +101,7 @@ export default function Contacts() {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-semibold mb-4">Contacts</h1>
-      <h1 className="font-semibold mb-4">Dashboard / Contacts</h1>
+      <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Contacts</h1>
       {/* Search Bar and Add Contact Button */}
       <div className="flex justify-between items-center mb-4 space-x-4">
         <input

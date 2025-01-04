@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
+import { GiCancel } from "react-icons/gi";
+import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';
 
 export default function Leaves() {
   const [leaves, setLeaves] = useState([]);
@@ -103,33 +106,43 @@ export default function Leaves() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">Leaves</h1>
-
-      {/* Search Bar and Add Leave Button */}
-      <div className="flex justify-end items-center mb-4 space-x-4">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          placeholder="Search leaves"
-          className="px-4 py-2 border border-gray-300 rounded-md w-48 transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          onClick={() => {
-            setIsFormVisible(true);
-            setEditIndex(null); // Reset for adding new leave
-          }}
-          className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300 ease-in-out transform hover:scale-105"
-        >
-          Add Leave
-        </button>
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <div className='flex flex-col gap-3'>
+          <h1 className="text-2xl font-semibold mb-4">Leaves</h1>
+          <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Leaves</h1>
+        </div>
+        {/* Search Bar and Add Leave Button */}
+        <div className="flex justify-end items-center mb-4 space-x-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search leaves"
+            className="px-4 py-2 border border-gray-300 rounded-md w-48 transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={() => {
+              setIsFormVisible(true);
+              setEditIndex(null); // Reset for adding new leave
+            }}
+            className="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-900 transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            Add Leave
+          </button>
+        </div>
       </div>
 
       {/* Popover Form to add or edit a leave */}
       {isFormVisible && (
         <div className="absolute inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 animate__animated animate__fadeIn animate__faster">
-          <div className="bg-white w-96 p-6 rounded-md shadow-lg animate__animated animate__zoomIn animate__faster">
+          <div className="bg-white w-96 p-6 rounded-md shadow-lg relative animate__animated animate__zoomIn animate__faster">
+            {/* Close Icon */}
+            <GiCancel
+              onClick={() => setIsFormVisible(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+              size={24}
+            />
             <h2 className="text-xl font-semibold mb-4">
               {editIndex !== null ? 'Edit Leave' : 'Add Leave'}
             </h2>
@@ -243,19 +256,13 @@ export default function Leaves() {
                 </div>
               </div>
 
-              {/* Add and Cancel Buttons */}
+              {/* Add and Update Buttons */}
               <div className="flex gap-4">
                 <button
                   onClick={editIndex !== null ? handleEditLeave : handleAddLeave}
-                  className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300 ease-in-out transform hover:scale-105"
+                  className="px-6 py-2 bg-slate-500 text-white rounded-md hover:bg-slate-600 transition duration-300 ease-in-out transform hover:scale-105"
                 >
-                  {editIndex !== null ? 'Update' : 'Add'}
-                </button>
-                <button
-                  onClick={() => setIsFormVisible(false)}
-                  className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-300 ease-in-out transform hover:scale-105"
-                >
-                  Cancel
+                  {editIndex !== null ? 'Update' : 'Submit'}
                 </button>
               </div>
             </div>
@@ -263,92 +270,82 @@ export default function Leaves() {
         </div>
       )}
 
-      {/* Leaves Table */}
-      <div className="mt-4">
-        <h2 className="text-xl font-semibold mb-2">Leave List:</h2>
 
-        <table className="min-w-full table-auto border-collapse shadow-lg rounded-md">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 text-left border-b">Employee Name</th>
-              <th className="px-4 py-2 text-left border-b">Leave Type</th>
-              <th className="px-4 py-2 text-left border-b">Start Date</th>
-              <th className="px-4 py-2 text-left border-b">End Date</th>
-              <th className="px-4 py-2 text-left border-b">Number of Days</th> {/* New column */}
-              <th className="px-4 py-2 text-left border-b">Status</th>
-              <th className="px-4 py-2 text-left border-b">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentLeaves.length > 0 ? (
-              currentLeaves.map((leave, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50 transition duration-200 ease-in-out">
-                  <td className="px-4 py-2">{leave.employeeName}</td>
-                  <td className="px-4 py-2">{leave.leaveType}</td>
-                  <td className="px-4 py-2">{leave.startDate}</td>
-                  <td className="px-4 py-2">{leave.endDate}</td>
-                  <td className="px-4 py-2">{calculateDays(leave.startDate, leave.endDate)}</td> {/* Display number of days */}
-                  <td
-                    className={`px-4 py-2 ${leave.status === 'approved'
-                      ? 'text-green-500'
-                      : leave.status === 'pending'
-                        ? 'text-yellow-500'
-                        : 'text-red-500'
-                      }`}
-                  >
-                    {leave.status === 'approved'
-                      ? 'Approved'
-                      : leave.status === 'pending'
-                        ? 'Pending'
-                        : 'Rejected'}
-                  </td>
-                  <td className="px-4 py-2 text-right">
-                    <div className="relative">
-                      <button
-                        onClick={() =>
-                          setDropdownIndex(dropdownIndex === index ? null : index) // Toggle dropdown
-                        }
-                        className="text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
-                      >
-                        <HiOutlineDotsVertical />
-                      </button>
-                      {dropdownIndex === index && (
-                        <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-md w-40 z-10">
-                          <button
-                            onClick={() => {
-                              setFormData(leave);
-                              setIsFormVisible(true);
-                              setEditIndex(index); // Set edit mode
-                              setDropdownIndex(null); // Close dropdown
-                            }}
-                            className="block px-4 py-2 text-blue-500 hover:text-blue-600 transition duration-200 ease-in-out"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteLeave(index)}
-                            className="block px-4 py-2 text-red-500 hover:text-red-600 transition duration-200 ease-in-out"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7" className="px-4 py-2 text-center">
-                  No leaves found.
+      {/* Leaves Table */}
+      <h2 className="text-xl font-semibold mb-2">Leave List:</h2>
+
+      <table className="min-w-full table-auto border-collapse shadow-lg rounded-md">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="px-4 py-2 text-left border-b">Employee Name</th>
+            <th className="px-4 py-2 text-left border-b">Leave Type</th>
+            <th className="px-4 py-2 text-left border-b">Start Date</th>
+            <th className="px-4 py-2 text-left border-b">End Date</th>
+            <th className="px-4 py-2 text-left border-b">Number of Days</th> {/* New column */}
+            <th className="px-4 py-2 text-left border-b">Status</th>
+            <th className="px-4 py-2 text-left border-b">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentLeaves.length > 0 ? (
+            currentLeaves.map((leave, index) => (
+              <tr key={index} className="border-b hover:bg-gray-50 transition duration-200 ease-in-out">
+                <td className="px-4 py-2">{leave.employeeName}</td>
+                <td className="px-4 py-2">{leave.leaveType}</td>
+                <td className="px-4 py-2">{leave.startDate}</td>
+                <td className="px-4 py-2">{leave.endDate}</td>
+                <td className="px-4 py-2">{calculateDays(leave.startDate, leave.endDate)}</td> {/* Display number of days */}
+                <td
+                  className={`px-4 py-2 ${leave.status === 'approved'
+                    ? 'text-green-500'
+                    : leave.status === 'pending'
+                      ? 'text-yellow-500'
+                      : 'text-red-500'
+                    }`}
+                >
+                  {leave.status === 'approved'
+                    ? 'Approved'
+                    : leave.status === 'pending'
+                      ? 'Pending'
+                      : 'Rejected'}
+                </td>
+                <td className="px-4 py-2 text-right">
+                  <div className="relative">
+                    {/* Edit Button - Pencil Icon */}
+                    <button
+                      onClick={() => {
+                        setFormData(leave);
+                        setIsFormVisible(true);
+                        setEditIndex(index); // Set edit mode
+                      }}
+                      className="text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
+                    >
+                      <HiOutlinePencilAlt size={20} />
+                    </button>
+
+                    {/* Delete Button - Trash Icon */}
+                    <button
+                      onClick={() => handleDeleteLeave(index)}
+                      className="ml-4 text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
+                    >
+                      <HiOutlineTrash size={20} />
+                    </button>
+                  </div>
                 </td>
               </tr>
-            )}
-          </tbody>
-        </table>
-
-        {/* Pagination Controls */}
-        <div className="flex justify-between mt-4">
+            ))
+          ) : (
+            <tr>
+              <td colSpan="7" className="px-4 py-2 text-center">
+                No leaves found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      {/* Pagination Controls */}
+      <div className="flex justify-end mt-4">
+        <div className="flex items-center">
           <button
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
@@ -356,7 +353,7 @@ export default function Leaves() {
           >
             Previous
           </button>
-          <span>
+          <span className="mx-4">
             Page {currentPage} of {totalPages}
           </span>
           <button

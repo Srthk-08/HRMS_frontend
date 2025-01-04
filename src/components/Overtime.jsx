@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
+import { GiCancel } from "react-icons/gi";
+import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';
 
 export default function Overtime() {
   const [overtime, setOvertime] = useState([]);
@@ -103,33 +106,44 @@ export default function Overtime() {
   const totalPages = Math.ceil(filteredOvertime.length / overtimePerPage);
 
   return (
-    <div className="p-6 max-w-7xl mx-auto bg-white rounded-lg shadow-lg">
-      <h1 className="text-3xl font-semibold text-gray-800 mb-6"> Employee Overtime</h1>
-      <h1 className=" font-semibold text-gray-800 mb-6">Dashboard / Overtime</h1>
-      {/* Search Bar and Add Overtime Button */}
-      <div className="flex justify-end items-center mb-4 space-x-4">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          placeholder="Search overtime"
-          className="px-4 py-2 border border-gray-300 rounded-md w-48 transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          onClick={() => {
-            setIsFormVisible(true);
-            setEditIndex(null);
-          }}
-          className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:scale-105"
-        >
-         Add Overtime
-        </button>
+    <div className="p-4">
+      {/* <div className=" max-w-7xl mx-auto bg-white rounded-lg shadow-lg"> */}
+      <div className="flex justify-between items-center mb-6">
+        <div className='flex flex-col gap-3'>
+          <h1 className="text-3xl font-semibold text-gray-800 mb-6"> Employee Overtime</h1>
+          <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Overtime</h1>
+        </div>
+        {/* Search Bar and Add Overtime Button */}
+        <div className="flex justify-end items-center mb-4 space-x-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search overtime"
+            className="px-4 py-2 border border-gray-300 rounded-md w-48 transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={() => {
+              setIsFormVisible(true);
+              setEditIndex(null);
+            }}
+            className="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-900 transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            Add Overtime
+          </button>
+        </div>
       </div>
-
       {/* Overtime Form (Popover) */}
       {isFormVisible && (
         <div className="absolute inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 animate__animated animate__fadeIn animate__faster">
-          <div className="bg-white w-96 p-6 rounded-md shadow-lg animate__animated animate__zoomIn animate__faster">
+          <div className="bg-white w-96 p-6 rounded-md relative shadow-lg animate__animated animate__zoomIn animate__faster">
+            {/* Close Icon */}
+            <GiCancel
+              onClick={() => setIsFormVisible(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer z-50"
+              size={24}
+            />
+
             <h2 className="text-xl font-semibold mb-4 text-gray-800">
               {editIndex !== null ? 'Edit Overtime' : 'Add Overtime'}
             </h2>
@@ -204,15 +218,9 @@ export default function Overtime() {
               <div className="flex gap-4">
                 <button
                   onClick={editIndex !== null ? handleEditOvertime : handleAddOvertime}
-                  className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:scale-105"
+                  className="px-6 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-700 transition duration-300 ease-in-out transform hover:scale-105"
                 >
-                  {editIndex !== null ? 'Update' : 'Add'}
-                </button>
-                <button
-                  onClick={() => setIsFormVisible(false)}
-                  className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-300 ease-in-out transform hover:scale-105"
-                >
-                  Cancel
+                  {editIndex !== null ? 'Update' : 'Submit'}
                 </button>
               </div>
             </div>
@@ -250,29 +258,14 @@ export default function Overtime() {
                         }
                         className="text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
                       >
-                        <HiOutlineDotsVertical />
+                        <HiOutlinePencilAlt className="text-slate-500 hover:text-blue-600" size={20} />
                       </button>
-                      {dropdownIndex === index && (
-                        <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-md w-40 z-10">
-                          <button
-                            onClick={() => {
-                              setFormData(entry);
-                              setIsFormVisible(true);
-                              setEditIndex(index);
-                              setDropdownIndex(null);
-                            }}
-                            className="block px-4 py-2 text-indigo-600 hover:text-indigo-700 transition duration-200 ease-in-out"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteOvertime(index)}
-                            className="block px-4 py-2 text-red-500 hover:text-red-600 transition duration-200 ease-in-out"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
+                      <button
+                        onClick={() => handleDeleteOvertime(index)}
+                        className="ml-4 text-red-500 hover:text-red-600 transition duration-200 ease-in-out"
+                      >
+                        <HiOutlineTrash className="text-slate-500 hover:text-red-600" size={20} />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -286,28 +279,31 @@ export default function Overtime() {
             )}
           </tbody>
         </table>
+      </div>
+
 
         {/* Pagination Controls */}
-        <div className="flex justify-between mt-4">
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200 ease-in-out disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200 ease-in-out disabled:opacity-50"
-          >
-            Next
-          </button>
+        <div className="flex justify-end mt-4">
+          <div className="flex items-center">
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200 ease-in-out disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="mx-4">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200 ease-in-out disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
-    </div>
   );
 }
