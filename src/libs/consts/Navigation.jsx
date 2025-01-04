@@ -12,12 +12,13 @@ import {
 } from 'react-icons/hi'
 import { HiOutlineBellAlert, HiOutlineClipboardDocument } from 'react-icons/hi2'
 
+
 export const DASHBOARD_MAIN_LINKS= [
   {
     key: 'dashboard',
     label: 'Dashboard',
     path: '/',
-    icon: <HiOutlineViewGrid />
+    icon: <HiOutlineViewGrid />,
   },
   {
     key: 'apps',
@@ -38,12 +39,8 @@ export const DASHBOARD_EMPLOYEE_LINKS = [
     icon: <HiOutlineUser />,
     subLinks: [
       { key: 'all employees', label: 'All Employees', path: '/employees/all' },
-      { key: 'employees personal detail', label: 'Employee Personal Detail', path: '/employees/details' },
       { key: 'holidays', label: 'Holidays', path: '/employees/holidays' },
-      { key: 'leave type', label: 'Leave Type', path: '/employees/leavetype' },
       { key: 'leaves', label: 'Leaves (Employee)', path: '/employees/leaves' },
-      { key: 'departments', label: 'Departments', path: '/employees/departments' },
-      { key: 'designations', label: 'Designations', path: '/employees/designations' },
       { key: 'overtime', label: 'Overtime', path: '/employees/overtime' }
     ],
   },
@@ -58,9 +55,6 @@ export const DASHBOARD_EMPLOYEE_LINKS = [
     label: 'Projects',
     path: '/projects',
     icon: <HiOutlineCubeTransparent />,
-    subLinks: [
-      { key: 'projects', label: 'Projects', path: '/projects/projects' },
-    ]
   },
   {
     key: 'leads',

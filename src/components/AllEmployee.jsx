@@ -3,7 +3,7 @@ import { HiOutlineDotsVertical } from 'react-icons/hi'; // Import the icon
 
 export default function AllEmployee() {
   const [employees, setEmployees] = useState([]);
-  const [editingIndex, setEditingIndex] = useState(null); 
+  const [editingIndex, setEditingIndex] = useState(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [formData, setFormData] = useState({
     employeeId: '',
@@ -26,32 +26,32 @@ export default function AllEmployee() {
     religion: '',
     picode: '',
     gender: '',
-    city: ''
+    city: '',
+    employeeDocument: '', // New field for document image
   });
   const [formErrors, setFormErrors] = useState({});
-  const [menuVisible, setMenuVisible] = useState(null); // For managing the visibility of the dropdown menu for each employee
-  const [filterDesignation, setFilterDesignation] = useState(''); // State for filter
-  const [filteredEmployees, setFilteredEmployees] = useState([]); // State for filtered employees
+  const [menuVisible, setMenuVisible] = useState(null);
+  const [filterDesignation, setFilterDesignation] = useState('');
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState(null); // New state for selected employee
+  const [isModalVisible, setIsModalVisible] = useState(false); // State for modal visibility
 
-  // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  // Handle image change (for employee image upload)
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]; // Get the selected file
+  const handleImageChange = (e, key) => {
+    const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData((prevData) => ({ ...prevData, employeeImage: reader.result }));
+        setFormData((prevData) => ({ ...prevData, [key]: reader.result }));
       };
-      reader.readAsDataURL(file); // Convert the file to a base64 string
+      reader.readAsDataURL(file);
     }
   };
 
-  // Validate form
   const validateForm = () => {
     const errors = {};
     Object.keys(formData).forEach((key) => {
@@ -66,17 +66,14 @@ export default function AllEmployee() {
     return Object.keys(errors).length === 0;
   };
 
-  // Add or update employee
   const handleAddEmployee = () => {
     if (validateForm()) {
       if (editingIndex !== null) {
-        // Update existing employee
         const updatedEmployees = [...employees];
         updatedEmployees[editingIndex] = formData;
         setEmployees(updatedEmployees);
         setEditingIndex(null);
       } else {
-        // Add new employee
         setEmployees([...employees, formData]);
       }
       setFormData({
@@ -100,39 +97,49 @@ export default function AllEmployee() {
         religion: '',
         picode: '',
         gender: '',
-        city: ''
+        city: '',
+        employeeDocument: '',
       });
       setIsFormVisible(false);
     }
   };
 
-  // Edit employee
-  const handleEditEmployee = (index) => {
-    const employee = employees[index];
-    setFormData({ ...employee });
-    setEditingIndex(index); // Set the index of the employee being edited
-    setIsFormVisible(true);
-  };
-  // Delete employee
-  const handleDeleteEmployee = (index) => {
-    setEmployees(employees.filter((_, i) => i !== index));
+  const applyFilter = () => {
+    if (filterDesignation.trim() === '') {
+      setFilteredEmployees(employees); // Show all employees if no filter is applied
+    } else {
+      const filtered = employees.filter(employee =>
+        employee.designation.toLowerCase().includes(filterDesignation.toLowerCase())
+      );
+      setFilteredEmployees(filtered);
+    }
   };
 
-  // Toggle menu visibility
+  const handleEditEmployee = (index) => {
+    setEditingIndex(index);
+    setFormData(employees[index]);
+    setIsFormVisible(true);
+    setMenuVisible(null); // Close the menu after clicking Edit
+  };
+
+  const handleDeleteEmployee = (index) => {
+    const updatedEmployees = employees.filter((_, i) => i !== index);
+    setEmployees(updatedEmployees);
+    setMenuVisible(null); // Close the menu after clicking Delete
+  };
+
   const toggleMenu = (index) => {
     setMenuVisible(menuVisible === index ? null : index);
   };
 
+  const openEmployeeModal = (employee) => {
+    setSelectedEmployee(employee);
+    setIsModalVisible(true);
+  };
 
-   const applyFilter = () => {
-    if (filterDesignation.trim()) {
-      const filtered = employees.filter((employee) =>
-        employee.designation.toLowerCase() === filterDesignation.toLowerCase()
-      );
-      setFilteredEmployees(filtered);
-    } else {
-      setFilteredEmployees(employees); // Reset to all employees
-    }
+  const closeEmployeeModal = () => {
+    setIsModalVisible(false);
+    setSelectedEmployee(null);
   };
 
   return (
@@ -159,7 +166,7 @@ export default function AllEmployee() {
           />
           <button
             onClick={applyFilter}
-            className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+            className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           >
             Apply Filter
           </button>
@@ -178,6 +185,7 @@ export default function AllEmployee() {
                 src={employee.employeeImage || 'https://via.placeholder.com/150'}
                 alt="Employee"
                 className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
+                onClick={() => openEmployeeModal(employee)} // Open modal on click
               />
               <h3 className="text-lg font-semibold text-center">{employee.firstName} {employee.lastName}</h3>
               <p className="text-center text-gray-500">{employee.email}</p>
@@ -218,12 +226,67 @@ export default function AllEmployee() {
         )}
       </div>
 
+      {/* Employee Details Modal */}
+      {isModalVisible && selectedEmployee && (
+        <div className="absolute inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white w-11/12 max-w-4xl p-6 rounded-md shadow-lg transform transition-all duration-500 ease-in-out scale-95 opacity-0 animate-fadeIn">
+            {/* Display Employee Profile Picture at the Top */}
+            {selectedEmployee.employeeImage && (
+              <img
+                src={selectedEmployee.employeeImage}
+                alt="Employee Profile"
+                className="w-24 h-24 rounded-full object-cover mx-auto mb-4"
+              />
+            )}
+
+            <h2 className="text-xl font-semibold mb-4 text-center">
+              {selectedEmployee.firstName} {selectedEmployee.lastName}
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+              <p><strong>Email:</strong> {selectedEmployee.email}</p>
+              <p><strong>Phone:</strong> {selectedEmployee.phone}</p>
+              <p><strong>Designation:</strong> {selectedEmployee.designation}</p>
+              <p><strong>Salary:</strong> {selectedEmployee.salary}</p>
+              <p><strong>Reporting Manager:</strong> {selectedEmployee.reportingManager}</p>
+              <p><strong>Company:</strong> {selectedEmployee.company}</p>
+              <p><strong>Department:</strong> {selectedEmployee.department}</p>
+              <p><strong>Birthday:</strong> {selectedEmployee.birthday}</p>
+              <p><strong>Address:</strong> {selectedEmployee.permanentAddress}</p>
+
+              {/* Employee Document Section */}
+              {selectedEmployee.employeeDocument && (
+                <div className="col-span-2">
+                  <h3 className="text-lg font-semibold mt-4">Employee Document</h3>
+                  <img
+                    src={selectedEmployee.employeeDocument}
+                    alt="Employee Document"
+                    className="w-full max-w-md mx-auto mt-2 rounded-md"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6 text-right">
+              <button
+                onClick={closeEmployeeModal}
+                className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
       {/* Popover Form to Add Employee */}
       {isFormVisible && (
         <div className="absolute inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white w-11/12 max-w-4xl p-6 rounded-md shadow-lg">
             <h2 className="text-xl font-semibold mb-4">Add Employee</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-h-96 overflow-y-scroll">
+              {/* Employee form fields */}
               {/* Employee ID Field */}
               <div>
                 <label htmlFor="employeeId" className="block text-sm font-medium">
@@ -411,20 +474,18 @@ export default function AllEmployee() {
                 {formErrors.designation && <p className="text-red-500 text-sm">{formErrors.designation}</p>}
               </div>
 
-              {/* Employee Image Field */}
+              {/* Employee Image */}
               <div>
                 <label htmlFor="employeeImage" className="block text-sm font-medium">
-                  Employee Image <span className="text-red-500">*</span>
+                  Employee Image
                 </label>
                 <input
                   type="file"
                   id="employeeImage"
-                  name="employeeImage"
-                  onChange={handleImageChange}
+                  onChange={(e) => handleImageChange(e, 'employeeImage')}
                   accept="image/*"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 />
-                {formErrors.employeeImage && <p className="text-red-500 text-sm">{formErrors.employeeImage}</p>}
                 {formData.employeeImage && (
                   <img
                     src={formData.employeeImage}
@@ -433,7 +494,6 @@ export default function AllEmployee() {
                   />
                 )}
               </div>
-
               {/* Aadhar No Field */}
               <div>
                 <label htmlFor="adharNo" className="block text-sm font-medium">
@@ -449,7 +509,26 @@ export default function AllEmployee() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 />
               </div>
-
+              {/* Document Upload */}
+              <div>
+                <label htmlFor="employeeDocument" className="block text-sm font-medium">
+                  Upload Document
+                </label>
+                <input
+                  type="file"
+                  id="employeeDocument"
+                  onChange={(e) => handleImageChange(e, 'employeeDocument')}
+                  accept="image/*"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                />
+                {formData.employeeDocument && (
+                  <img
+                    src={formData.employeeDocument}
+                    alt="Document"
+                    className="w-32 h-32 mx-auto mt-4 object-cover"
+                  />
+                )}
+              </div>
               {/* Permanent Address Field */}
               <div>
                 <label htmlFor="permanentAddress" className="block text-sm font-medium">

@@ -7,11 +7,14 @@ export default function Header() {
   const toggleProfileDropdown = () => setIsProfileDropdownOpen(!isProfileDropdownOpen);
 
   return (
-    <div className="bg-white h-16 px-4 flex justify-end items-center border border-gray-200">
+    <div className="bg-cyan-950 h-16 px-4 flex justify-end items-center border-b border-cyan-800">
       {/* Right Section: Notifications and Profile */}
       <div className="flex items-center gap-4">
         {/* Notifications */}
-        <HiOutlineBell fontSize={24} className="cursor-pointer hover:text-gray-600" />
+        <HiOutlineBell
+          fontSize={24}
+          className="cursor-pointer text-white hover:text-cyan-300 transition-colors duration-300"
+        />
 
         {/* Profile Section */}
         <div className="relative">
@@ -28,11 +31,15 @@ export default function Header() {
 
           {/* Profile Dropdown */}
           {isProfileDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded shadow-lg border border-gray-200 z-50">
-              <div className="flex flex-col">
-                <button className="px-4 py-2 hover:bg-gray-100 text-left">Profile</button>
-                <button className="px-4 py-2 hover:bg-gray-100 text-left">Settings</button>
-                <button className="px-4 py-2 hover:bg-gray-100 text-left text-red-500">
+            <div className="absolute right-0 mt-2 w-48 bg-cyan-950 rounded shadow-lg border border-cyan-800 z-50">
+              <div className="flex flex-col text-white">
+                <button className="px-4 py-2 hover:bg-cyan-800 text-left">
+                  Profile
+                </button>
+                <button className="px-4 py-2 hover:bg-cyan-800 text-left">
+                  Settings
+                </button>
+                <button className="px-4 py-2 hover:bg-red-600 text-left text-red-400">
                   Logout
                 </button>
               </div>
