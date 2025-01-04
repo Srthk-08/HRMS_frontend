@@ -11,11 +11,11 @@ import {
 } from '../../libs/consts/navigation';
 
 const linkClasses =
-  'flex items-center gap-2 font-light px-3 py-2 hover:bg-cyan-700 hover:no-underline active:bg-cyan-800 rounded-sm text-base ';
+  'flex items-center gap-2 font-light px-3 py-2 hover:bg-slate-700 hover:no-underline active:bg-slate-600 rounded-sm text-base ';
 
 const Sidebar = () => {
   return (
-    <div className="flex flex-col bg-cyan-950 text-white w-60 h-full">
+    <div className="flex flex-col bg-slate-800 text-white w-60 h-full">
       {/* Logo Section */}
       <div className="flex items-center gap-2 px-1 pb-3">
         <img
@@ -25,14 +25,15 @@ const Sidebar = () => {
         />
       </div>
 
-      <div className="flex-1 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-600 scrollbar-track-cyan-800 scrollbar-thumb-rounded-lg scrollbar-track-rounded-lg">
+      {/* Scrollable Content */}
+      <div className="flex-1 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-700 scrollbar-thumb-rounded-lg scrollbar-track-rounded-lg">
         <Section title="Main" links={DASHBOARD_MAIN_LINKS} />
         <Section title="Employees" links={DASHBOARD_EMPLOYEE_LINKS} />
         <Section title="HR" links={DASHBOARD_HR_LINKS} />
       </div>
 
       {/* Bottom Links */}
-      <div className="pt-4 border-t border-cyan-500">
+      <div className="pt-4 border-t border-slate-700">
         {DASHBOARD_SIDEBAR_BOTTOM_LINKS.map((item) => (
           <SidebarLink key={item.key} item={item} />
         ))}
@@ -49,7 +50,7 @@ const Sidebar = () => {
 
 const Section = ({ title, links }) => (
   <div>
-    <h2 className="text-sm font-semibold text-cyan-300 px-3">{title}</h2>
+    <h2 className="text-sm font-semibold text-slate-300 px-3">{title}</h2>
     <div className="flex flex-col gap-0.5 mt-2">
       {links.map((item) => (
         <SidebarLink key={item.key} item={item} />
@@ -71,8 +72,8 @@ const SidebarLink = ({ item }) => {
         <Link
           to={item.path}
           className={classNames(
-            'flex items-center gap-2 px-3 py-2 font-light text-base rounded-sm cursor-pointer hover:bg-cyan-700 transition-colors duration-300',
-            pathname === item.path ? 'text-white bg-cyan-700' : 'text-cyan-300'
+            'flex items-center gap-2 px-3 py-2 font-light text-base rounded-sm cursor-pointer hover:bg-slate-700 transition-colors duration-300',
+            pathname === item.path ? 'text-white bg-slate-700' : 'text-slate-300'
           )}
         >
           <span className="text-xl">{item.icon}</span>
@@ -82,8 +83,8 @@ const SidebarLink = ({ item }) => {
         <div
           onClick={toggleDropdown}
           className={classNames(
-            'flex items-center gap-2 px-3 py-2 font-light text-base rounded-sm cursor-pointer hover:bg-cyan-700 transition-colors duration-300',
-            pathname === item.path ? 'text-white bg-cyan-700' : 'text-cyan-300'
+            'flex items-center gap-2 px-3 py-2 font-light text-base rounded-sm cursor-pointer hover:bg-slate-700 transition-colors duration-300',
+            pathname === item.path ? 'text-white bg-slate-700' : 'text-slate-300'
           )}
         >
           <span className="text-xl">{item.icon}</span>
@@ -100,14 +101,14 @@ const SidebarLink = ({ item }) => {
       )}
 
       {hasSubLinks && isOpen && (
-        <div className="mt-1 ml-4 flex flex-col gap-1 bg-cyan-800 rounded shadow-lg p-2 transition-all duration-300">
+        <div className="mt-1 ml-4 flex flex-col gap-1 bg-slate-700 rounded shadow-lg p-2 transition-all duration-300">
           {item.subLinks.map((subItem) => (
             <Link
               key={subItem.key}
               to={subItem.path}
               className={classNames(
-                'block px-3 py-2 text-sm rounded hover:bg-cyan-700 hover:text-white transition-colors duration-200',
-                pathname === subItem.path && 'text-white bg-cyan-700'
+                'block px-3 py-2 text-sm rounded hover:bg-slate-600 hover:text-white transition-colors duration-200',
+                pathname === subItem.path && 'text-white bg-slate-600'
               )}
             >
               {subItem.label}

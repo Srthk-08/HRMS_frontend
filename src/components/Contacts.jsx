@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { HiOutlineDotsVertical } from 'react-icons/hi';
+import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';
+import { GiCancel } from "react-icons/gi";
 
 export default function Contacts() {
   const [contacts, setContacts] = useState([]);
@@ -16,14 +17,14 @@ export default function Contacts() {
     contact: false,
   });
   const [searchQuery, setSearchQuery] = useState('');
-  const [editIndex, setEditIndex] = useState(null); // Track which contact to edit
+  const [editIndex, setEditIndex] = useState(null);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const contactsPerPage = 5;
 
   // Dropdown menu state
-  const [dropdownIndex, setDropdownIndex] = useState(null); // Track the index of the dropdown menu
+  const [dropdownIndex, setDropdownIndex] = useState(null);
 
   // Function to handle input changes in the form
   const handleInputChange = (e) => {
@@ -44,7 +45,7 @@ export default function Contacts() {
       contact: !formData.contact.trim(),
     };
     setFormErrors(errors);
-    return !Object.values(errors).includes(true); // Return true if no errors
+    return !Object.values(errors).includes(true);
   };
 
   // Function to handle form submission for adding a new contact
@@ -64,7 +65,7 @@ export default function Contacts() {
       setContacts(updatedContacts);
       setFormData({ name: '', email: '', contact: '', status: 'active' });
       setIsFormVisible(false);
-      setEditIndex(null); // Clear edit index
+      setEditIndex(null);
     }
   };
 
@@ -72,7 +73,7 @@ export default function Contacts() {
   const handleDeleteContact = (index) => {
     const updatedContacts = contacts.filter((_, i) => i !== index);
     setContacts(updatedContacts);
-    setDropdownIndex(null); // Close dropdown menu after delete
+    setDropdownIndex(null);
   };
 
   // Function to handle search input change
@@ -99,7 +100,7 @@ export default function Contacts() {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-semibold mb-4">Contacts</h1>
-
+      <h1 className="font-semibold mb-4">Dashboard / Contacts</h1>
       {/* Search Bar and Add Contact Button */}
       <div className="flex justify-between items-center mb-4 space-x-4">
         <input
@@ -114,7 +115,7 @@ export default function Contacts() {
             setIsFormVisible(true);
             setEditIndex(null); // Reset for adding new contact
           }}
-          className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+          className="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-900 transition duration-300"
         >
           Add Contact
         </button>
@@ -123,7 +124,13 @@ export default function Contacts() {
       {/* Popover Form to add or edit a contact */}
       {isFormVisible && (
         <div className="absolute inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white w-full max-w-md p-6 rounded-md shadow-lg">
+          <div className="bg-white w-full max-w-md p-6 rounded-md shadow-lg relative">
+            {/* Close Icon */}
+            <GiCancel
+              onClick={() => setIsFormVisible(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+              size={24}
+            />
             <h2 className="text-xl font-semibold mb-4">
               {editIndex !== null ? 'Edit Contact' : 'Add Contact'}
             </h2>
@@ -210,19 +217,13 @@ export default function Contacts() {
                 </div>
               </div>
 
-              {/* Add and Cancel Buttons */}
+              {/* Add Button */}
               <div className="flex gap-4">
                 <button
                   onClick={editIndex !== null ? handleEditContact : handleAddContact}
-                  className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300"
+                  className="px-6 py-2 bg-slate-500 text-white rounded-md hover:bg-slate-600 transition duration-300"
                 >
-                  {editIndex !== null ? 'Update' : 'Add'}
-                </button>
-                <button
-                  onClick={() => setIsFormVisible(false)}
-                  className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-300"
-                >
-                  Cancel
+                  {editIndex !== null ? 'Update' : 'Submit'}
                 </button>
               </div>
             </div>
@@ -232,8 +233,6 @@ export default function Contacts() {
 
       {/* Contacts Table */}
       <div className="mt-4">
-        <h2 className="text-xl font-semibold mb-2">Contact List:</h2>
-
         <table className="min-w-full table-auto border-collapse shadow-lg rounded-md">
           <thead className="bg-gray-100">
             <tr>
@@ -260,33 +259,18 @@ export default function Contacts() {
                     <div className="relative">
                       <button
                         onClick={() =>
-                          setDropdownIndex(dropdownIndex === index ? null : index) // Toggle dropdown
+                          setDropdownIndex(dropdownIndex === index ? null : index)
                         }
                         className="text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
                       >
-                        <HiOutlineDotsVertical />
+                        <HiOutlinePencilAlt className="text-slate-900 hover:text-blue-600" />
                       </button>
-                      {dropdownIndex === index && (
-                        <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-md w-40 z-10">
-                          <button
-                            onClick={() => {
-                              setFormData(contact);
-                              setIsFormVisible(true);
-                              setEditIndex(index); // Set edit mode
-                              setDropdownIndex(null); // Close dropdown
-                            }}
-                            className="block px-4 py-2 text-blue-500 hover:text-blue-600 transition duration-200 ease-in-out"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteContact(index)}
-                            className="block px-4 py-2 text-red-500 hover:text-red-600 transition duration-200 ease-in-out"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
+                      <button
+                        onClick={() => handleDeleteContact(index)}
+                        className="ml-2 text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
+                      >
+                        <HiOutlineTrash className="text-slate-900 hover:text-red-600" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -300,28 +284,30 @@ export default function Contacts() {
             )}
           </tbody>
         </table>
-
         {/* Pagination Controls */}
-        <div className="flex justify-between mt-4">
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200 ease-in-out disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200 ease-in-out disabled:opacity-50"
-          >
-            Next
-          </button>
+        <div className="flex justify-end mt-4">
+          <div className="flex items-center">
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200 ease-in-out disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="mx-4">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200 ease-in-out disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
+
     </div>
   );
 }
