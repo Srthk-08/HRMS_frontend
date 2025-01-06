@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { HiOutlineDotsVertical } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
 import { GiCancel } from "react-icons/gi";
 import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';

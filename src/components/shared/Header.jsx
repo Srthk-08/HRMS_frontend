@@ -1,25 +1,28 @@
 import React, { useState } from 'react';
-import { HiOutlineBell } from 'react-icons/hi';
+import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-
+  const navigate = useNavigate();
   const toggleProfileDropdown = () => setIsProfileDropdownOpen(!isProfileDropdownOpen);
 
+  const handleLogout = () => {
+    // Clear authentication data (if stored in state or localStorage)
+    localStorage.removeItem('authToken'); // Example: Remove stored token
+    sessionStorage.removeItem('authData'); // Example: Remove session data
+
+    // Redirect to the login page
+    navigate('/login');
+  };
+
   return (
-    <div className="bg-slate-800 h-16 px-4 flex justify-end items-center border-b border-slate-700">
+    <div className="bg-slate-800 h-20 px-4 flex justify-end items-center border-b border-slate-700">
       {/* Right Section: Notifications and Profile */}
       <div className="flex items-center gap-4">
-        {/* Notifications */}
-        <HiOutlineBell
-          fontSize={24}
-          className="cursor-pointer text-slate-200 hover:text-slate-300 transition-colors duration-300"
-        />
-
         {/* Profile Section */}
         <div className="relative">
           <div
-            className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center cursor-pointer"
+            className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center cursor-pointer"
             onClick={toggleProfileDropdown}
           >
             <img
@@ -39,7 +42,7 @@ export default function Header() {
                 <button className="px-4 py-2 hover:bg-slate-600 text-left">
                   Settings
                 </button>
-                <button className="px-4 py-2 hover:bg-red-600 text-left text-red-400">
+                <button className="px-4 py-2 hover:bg-red-600 text-left text-red-400" onClick={handleLogout}>
                   Logout
                 </button>
               </div>

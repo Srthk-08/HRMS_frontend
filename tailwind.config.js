@@ -6,6 +6,7 @@ export default {
   ],
   theme: {
     extend: {
+      scrollbar: ['rounded'],
       colors: {
         'cyan-600': '#00B5B8',
         'cyan-800': '#007C7F',

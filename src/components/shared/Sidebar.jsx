@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 import { HiOutlineLogout } from 'react-icons/hi';
-import logo from '../../assests/logo.png';
+import logo from '../../assets/logo.png';
 import {
   DASHBOARD_MAIN_LINKS,
   DASHBOARD_EMPLOYEE_LINKS,
@@ -14,6 +14,11 @@ const linkClasses =
   'flex items-center gap-2 font-light px-3 py-2 hover:bg-slate-700 hover:no-underline active:bg-slate-600 rounded-sm text-base ';
 
 const Sidebar = () => {
+  const navigate = useNavigate(); // Hook to navigate to routes
+
+  const handleLogout = () => {
+    navigate('/logout'); // Navigate to the logout route
+  };
   return (
     <div className="flex flex-col bg-slate-800 text-white w-60 h-full">
       {/* Logo Section */}
@@ -37,7 +42,7 @@ const Sidebar = () => {
         {DASHBOARD_SIDEBAR_BOTTOM_LINKS.map((item) => (
           <SidebarLink key={item.key} item={item} />
         ))}
-        <div className={classNames('text-red-400 cursor-pointer', linkClasses)}>
+        <div className={classNames('text-red-400 cursor-pointer', linkClasses)} onClick={handleLogout}>
           <span className="text-xl">
             <HiOutlineLogout />
           </span>
