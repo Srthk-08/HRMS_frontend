@@ -145,8 +145,8 @@ export default function AllEmployee() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">Employees</h1>
+    <div>
+      <h1 className="text-3xl font-semibold mb-2">Employees</h1>
       <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Employee</h1>
       {/* Add Employee and Filter Section */}
       <div className="mb-4 flex flex-wrap justify-between items-center">

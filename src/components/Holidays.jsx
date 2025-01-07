@@ -63,7 +63,7 @@ export default function Holidays() {
   };
 
   return (
-    <div className="p-6">
+    <div>
       {/* Header with flexbox layout */}
       <div className="flex justify-between items-center mb-6">
         <div className='flex flex-col gap-3'>

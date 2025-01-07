@@ -13,6 +13,8 @@ import Leads from './components/Leads';
 import Login from './components/Login';
 import Logout from './components/Logout'; 
 import Invoice from './components/Invoice';
+import Expense from './components/Expense';
+import ProvidentFund from './components/ProvidentFund';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -43,6 +45,8 @@ function App() {
           <Route path="projects" element={<Projects />} />
           <Route path="leads" element={<Leads />} />
           <Route path="accounts/invoices" element={<Invoice />} />
+          <Route path="accounts/expenses" element={<Expense />} />
+          <Route path="accounts/providentfund" element={<ProvidentFund />} />
         </Route>
 
         {/* Login route */}

@@ -99,8 +99,8 @@ export default function Contacts() {
   const totalPages = Math.ceil(filteredContacts.length / contactsPerPage);
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-semibold mb-4">Contacts</h1>
+    <div className="bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-semibold mb-2">Contacts</h1>
       <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Contacts</h1>
       {/* Search Bar and Add Contact Button */}
       <div className="flex justify-between items-center mb-4 space-x-4">

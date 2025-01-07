@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { HiOutlineDotsVertical } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
 import { GiCancel } from "react-icons/gi";
 import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';
@@ -106,10 +105,10 @@ export default function Leaves() {
   };
 
   return (
-    <div className="p-6">
+    <div>
       <div className="flex justify-between items-center mb-6">
-        <div className='flex flex-col gap-3'>
-          <h1 className="text-2xl font-semibold mb-4">Leaves</h1>
+        <div className='flex flex-col '>
+          <h1 className="text-3xl font-semibold mb-2">Leaves</h1>
           <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Leaves</h1>
         </div>
         {/* Search Bar and Add Leave Button */}

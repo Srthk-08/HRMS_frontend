@@ -162,7 +162,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <p className="text-2xl font-semibold mb-6">Admin Dashboard</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white p-6 flex items-center rounded-md shadow-md hover:shadow-lg text-center space-x-4 gap-10">

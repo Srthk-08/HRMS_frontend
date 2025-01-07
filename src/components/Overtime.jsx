@@ -105,11 +105,11 @@ export default function Overtime() {
   const totalPages = Math.ceil(filteredOvertime.length / overtimePerPage);
 
   return (
-    <div className="p-4">
+    <div>
       {/* <div className=" max-w-7xl mx-auto bg-white rounded-lg shadow-lg"> */}
       <div className="flex justify-between items-center mb-6">
-        <div className='flex flex-col gap-3'>
-          <h1 className="text-3xl font-semibold text-gray-800 mb-6"> Employee Overtime</h1>
+        <div className='flex flex-col'>
+          <h1 className="text-3xl font-semibold text-gray-800 mb-2"> Employee Overtime</h1>
           <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Overtime</h1>
         </div>
         {/* Search Bar and Add Overtime Button */}

@@ -92,10 +92,10 @@ export default function Projects() {
   };
 
   return (
-    <div className="p-4">
+    <div>
       <div className="flex justify-between items-center mb-6">
-        <div className='flex flex-col gap-3'>
-          <h1 className="text-2xl font-semibold">Project List</h1>
+        <div className='flex flex-col'>
+          <h1 className="text-3xl font-semibold mb-2">Project List</h1>
           <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Overtime</h1>
         </div>
         <button

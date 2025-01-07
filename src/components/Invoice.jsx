@@ -110,10 +110,10 @@ export default function Invoice() {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <div className='flex flex-col gap-3'>
-          <h1 className="text-3xl font-semibold mb-4">Invoices</h1>
+        <div className='flex flex-col'>
+          <h1 className="text-3xl font-semibold mb-2">Invoices</h1>
           <h1 className="font-semibold mb-4">
             <Link to="/">Dashboard</Link> / Invoices
           </h1>
