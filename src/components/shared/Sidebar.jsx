@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 import { HiOutlineLogout } from 'react-icons/hi';
 import logo from '../../assets/logo.png';
@@ -13,14 +13,23 @@ import {
 const linkClasses =
   'flex items-center gap-2 font-light px-3 py-2 hover:bg-slate-700 hover:no-underline active:bg-slate-600 rounded-sm text-base ';
 
-const Sidebar = () => {
-  const navigate = useNavigate(); // Hook to navigate to routes
+const Sidebar = ({ isSidebarOpen }) => {
+  const { pathname } = useLocation();
 
   const handleLogout = () => {
-    navigate('/logout'); // Navigate to the logout route
+    // Handle logout logic
+    console.log('Logging out...');
   };
+
   return (
-    <div className="flex flex-col bg-slate-800 text-white w-60 h-full">
+    <div
+      className={classNames(
+        "sidebar flex flex-col bg-slate-800 text-white transition-all duration-300 overflow-hidden fixed md:relative md:w-60 md:overflow-visible",
+        isSidebarOpen
+          ? "open w-60 left-0 top-0 bottom-0 z-50 transform transition-all duration-300"
+          : "closed w-0 transform -translate-x-full md:w-60 md:translate-x-0"
+      )}
+    >
       {/* Logo Section */}
       <div className="flex items-center gap-2 px-1 pb-3">
         <img

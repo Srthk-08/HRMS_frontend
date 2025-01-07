@@ -11,10 +11,15 @@ import Clients from './components/Clients';
 import Projects from './components/Projects';
 import Leads from './components/Leads';
 import Login from './components/Login';
-import Logout from './components/Logout'; 
+import Logout from './components/Logout';
 import Invoice from './components/Invoice';
 import Expense from './components/Expense';
 import ProvidentFund from './components/ProvidentFund';
+import Tax from './components/Tax';
+import Policy from './components/Policy';
+import Asset from './components/Assets';
+import Profile from './components/shared/Profile';
+import Users from './components/Users';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -47,6 +52,11 @@ function App() {
           <Route path="accounts/invoices" element={<Invoice />} />
           <Route path="accounts/expenses" element={<Expense />} />
           <Route path="accounts/providentfund" element={<ProvidentFund />} />
+          <Route path="accounts/taxes" element={<Tax />} />
+          <Route path="policies" element={<Policy />} />
+          <Route path="assets" element={<Asset />} />
+          <Route path="users" element={<Users />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
 
         {/* Login route */}
@@ -54,7 +64,6 @@ function App() {
           path="/login"
           element={<Login onLogin={handleLogin} />}
         />
-
         {/* Logout route */}
         <Route
           path="/logout"

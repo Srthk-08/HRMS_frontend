@@ -110,7 +110,7 @@ export default function Invoice() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <div className='flex flex-col'>
           <h1 className="text-3xl font-semibold mb-2">Invoices</h1>

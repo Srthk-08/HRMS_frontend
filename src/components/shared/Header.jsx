@@ -1,24 +1,55 @@
 import React, { useState } from 'react';
+import { HiOutlineMenu } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
+import logo from '../../assets/logo.png';
 
-export default function Header() {
+export default function Header({ toggleSidebar, isSidebarHidden }) {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const navigate = useNavigate();
+
   const toggleProfileDropdown = () => setIsProfileDropdownOpen(!isProfileDropdownOpen);
 
-  const handleLogout = () => {
-    // Clear authentication data (if stored in state or localStorage)
-    localStorage.removeItem('authToken'); // Example: Remove stored token
-    sessionStorage.removeItem('authData'); // Example: Remove session data
+  const handleProfile = () => {
+    navigate('/profile');
+  };
 
-    // Redirect to the login page
+  const handleLogout = () => {
+    // Clear authentication data
+    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('authData');
+
+    // Redirect to login page
     navigate('/login');
   };
 
+  const handleMenuClick = () => {
+    toggleSidebar(); // Toggle the sidebar visibility
+  };
+
   return (
-    <div className="bg-slate-800 h-20 px-4 flex justify-end items-center border-b border-slate-700">
-      {/* Right Section: Notifications and Profile */}
-      <div className="flex items-center gap-4">
+    <div className="bg-slate-800 h-20 px-4 flex items-center border-b border-slate-700">
+      {/* Left Section: Logo and Menu Icon */}
+      <div className="flex items-center space-x-4">
+        {/* Show Logo and Menu Icon when Sidebar is Hidden */}
+        {isSidebarHidden ? (
+          <>
+            <img src={logo} alt="Logo" className="h-8 hidden md:block" />
+            <HiOutlineMenu
+              className="text-white text-2xl cursor-pointer md:hidden" // Show on mobile
+              onClick={handleMenuClick} // Trigger sidebar toggle on click
+            />
+          </>
+        ) : (
+          // Show Menu Icon when Sidebar is Open (on mobile)
+          <HiOutlineMenu
+            className="text-white text-2xl cursor-pointer md:hidden" // Always show on mobile
+            onClick={handleMenuClick} // Trigger sidebar toggle on click
+          />
+        )}
+      </div>
+
+      {/* Right Section: Profile and Logout */}
+      <div className="ml-auto flex items-center gap-4">
         {/* Profile Section */}
         <div className="relative">
           <div
@@ -36,7 +67,7 @@ export default function Header() {
           {isProfileDropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-slate-700 rounded shadow-lg border border-slate-600 z-50">
               <div className="flex flex-col text-slate-200">
-                <button className="px-4 py-2 hover:bg-slate-600 text-left">
+                <button className="px-4 py-2 hover:bg-slate-600 text-left" onClick={handleProfile}>
                   Profile
                 </button>
                 <button className="px-4 py-2 hover:bg-slate-600 text-left">
