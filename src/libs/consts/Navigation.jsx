@@ -9,9 +9,10 @@ import {
   HiOutlineCash,
   HiOutlineUserAdd,
   HiOutlineCollection,
+  HiOutlineUserGroup,
 } from 'react-icons/hi'
-import { HiOutlineBellAlert, HiOutlineClipboardDocument } from 'react-icons/hi2'
-
+import { HiOutlineBellAlert, HiOutlineCalendarDays, HiOutlineClipboardDocument, HiOutlineClipboardDocumentList } from 'react-icons/hi2'
+import { GiBackwardTime, GiPartyPopper } from "react-icons/gi";
 
 export const DASHBOARD_MAIN_LINKS= [
   {
@@ -97,6 +98,52 @@ export const DASHBOARD_HR_LINKS = [
   },
 ]
 
+export const DASHBOARD_AGENTS_LINKS = [
+  {
+    key: 'agents',
+    label: 'All Agents',
+    path: '/agents/all',
+    icon: <HiOutlineUserGroup />,
+  },
+  {
+    key: 'agents detail',
+    label: 'Agents Details',
+    path: '/agents/details',
+    icon: <HiOutlineClipboardDocumentList />
+  },
+  {
+    key: 'agents status',
+    label: 'Agent Status',
+    path: '/agents/status',
+    icon: <GiBackwardTime />
+  },
+  {
+    key: 'agents holiday',
+    label: 'Holidays',
+    path: '/agents/holidays',
+    icon: <GiPartyPopper />
+  },
+  {
+    key: 'leaves',
+    label: 'Leaves (Agents)',
+    path: '/agents/leaves',
+    icon: <HiOutlineCalendarDays/>
+  },
+]
+
+export const DASHBOARD_HIERARCHY_LINKS = [
+  {
+    key: 'hierarchy',
+    label: 'Hierarchy',
+    path: '/hierarchy',
+    icon: <HiOutlineUserGroup />,
+    subLinks: [
+      { key: 'add head', label: 'Add Head', path: '/hierarchy/addhead' },
+      { key: 'add position', label: 'Add Position', path: '/hierarchy/addposition' },
+      { key: 'hierarchy graph', label: 'Hierarchy Graph', path: '/hierarchy/graph' },
+    ]
+  }, 
+]
 
 export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
   {

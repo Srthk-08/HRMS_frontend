@@ -23,28 +23,40 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #000000;
 }
-@media (max-width: 768px) {
 
-  /* Sidebar mobile style */
-  .sidebar {
-    position: fixed;
-    /* Fixed positioning */
-    left: 0;
-    top: 0;
-    bottom: 0;
-    z-index: 50;
-    /* Ensure it appears over content */
-    transition: transform 0.3s ease;
-    /* Smooth transition */
+@media (max-width: 768px) {
+  /* Desktop view: Hide the logo */
+    .header img {
+      display: none;
+    }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
-  .sidebar.closed {
+  /* Ensure menu icon is always visible */
+  .header .menu-icon {
+    display: block;
+    z-index: 60;
+    /* Ensure it appears above the sidebar */
+  }
+
+  /* Sidebar behavior */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 60%;
+    /* Adjust as needed */
+    background: #1e293b;
+    z-index: 50;
     transform: translateX(-100%);
-    /* Hide when closed */
+    transition: transform 0.3s ease;
   }
 
   .sidebar.open {
     transform: translateX(0);
-    /* Slide in when opened */
   }
 }

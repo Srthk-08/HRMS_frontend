@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import { GiCancel } from "react-icons/gi";
 import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';
 
-export default function Leaves() {
-  const [leaves, setLeaves] = useState([]);
+export default function AgentsLeaves() {
+  const [agentsLeaves, setAgentsLeaves] = useState([]);
   const [formData, setFormData] = useState({
-    employeeName: '',
+    agentName: '',
     leaveType: '',
     startDate: '',
     endDate: '',
@@ -14,7 +14,7 @@ export default function Leaves() {
   });
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [formErrors, setFormErrors] = useState({
-    employeeName: false,
+    agentName: false,
     leaveType: false,
     startDate: false,
     endDate: false,
@@ -24,10 +24,7 @@ export default function Leaves() {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const leavesPerPage = 5;
-
-  // Dropdown menu state
-  const [dropdownIndex, setDropdownIndex] = useState(null); // Track the index of the dropdown menu
+  const agentsLeavesPerPage = 5;
 
   // Function to handle input changes in the form
   const handleInputChange = (e) => {
@@ -38,7 +35,7 @@ export default function Leaves() {
   // Function to validate the form before adding or updating a leave
   const validateForm = () => {
     const errors = {
-      employeeName: !formData.employeeName.trim(),
+      agentName: !formData.agentName.trim(),
       leaveType: !formData.leaveType.trim(),
       startDate: !formData.startDate.trim(),
       endDate: !formData.endDate.trim(),
@@ -50,8 +47,8 @@ export default function Leaves() {
   // Function to handle form submission for adding a new leave
   const handleAddLeave = () => {
     if (validateForm()) {
-      setLeaves([...leaves, formData]);
-      setFormData({ employeeName: '', leaveType: '', startDate: '', endDate: '', status: 'approved' });
+      setAgentsLeaves([...agentsLeaves, formData]);
+      setFormData({ agentName: '', leaveType: '', startDate: '', endDate: '', status: 'approved' });
       setIsFormVisible(false);
     }
   };
@@ -59,10 +56,10 @@ export default function Leaves() {
   // Function to handle editing an existing leave
   const handleEditLeave = () => {
     if (validateForm()) {
-      const updatedLeaves = [...leaves];
-      updatedLeaves[editIndex] = formData;
-      setLeaves(updatedLeaves);
-      setFormData({ employeeName: '', leaveType: '', startDate: '', endDate: '', status: 'approved' });
+      const updatedAgentsLeaves = [...agentsLeaves];
+      updatedAgentsLeaves[editIndex] = formData;
+      setAgentsLeaves(updatedAgentsLeaves);
+      setFormData({ agentName: '', leaveType: '', startDate: '', endDate: '', status: 'approved' });
       setIsFormVisible(false);
       setEditIndex(null); // Clear edit index
     }
@@ -70,9 +67,8 @@ export default function Leaves() {
 
   // Function to handle deleting a leave
   const handleDeleteLeave = (index) => {
-    const updatedLeaves = leaves.filter((_, i) => i !== index);
-    setLeaves(updatedLeaves);
-    setDropdownIndex(null); // Close dropdown menu after delete
+    const updatedAgentsLeaves = agentsLeaves.filter((_, i) => i !== index);
+    setAgentsLeaves(updatedAgentsLeaves);
   };
 
   // Function to handle search input change
@@ -81,20 +77,20 @@ export default function Leaves() {
   };
 
   // Filter leaves based on search query
-  const filteredLeaves = leaves.filter((leave) =>
-    leave.employeeName.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredAgentsLeaves = agentsLeaves.filter((leave) =>
+    leave.agentName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Paginate the filtered leaves
-  const indexOfLastLeave = currentPage * leavesPerPage;
-  const indexOfFirstLeave = indexOfLastLeave - leavesPerPage;
-  const currentLeaves = filteredLeaves.slice(indexOfFirstLeave, indexOfLastLeave);
+  const indexOfLastLeave = currentPage * agentsLeavesPerPage;
+  const indexOfFirstLeave = indexOfLastLeave - agentsLeavesPerPage;
+  const currentLeaves = filteredAgentsLeaves.slice(indexOfFirstLeave, indexOfLastLeave);
 
   // Function to change the page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   // Calculate the total number of pages
-  const totalPages = Math.ceil(filteredLeaves.length / leavesPerPage);
+  const totalPages = Math.ceil(filteredAgentsLeaves.length / agentsLeavesPerPage);
 
   // Function to calculate the number of days between start and end date
   const calculateDays = (startDate, endDate) => {
@@ -108,8 +104,8 @@ export default function Leaves() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div className='flex flex-col '>
-          <h1 className="text-3xl font-semibold mb-2">Leaves</h1>
-          <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Leaves</h1>
+          <h1 className="text-3xl font-semibold mb-2">Agent Leaves</h1>
+          <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Agent Leaves</h1>
         </div>
         {/* Search Bar and Add Leave Button */}
         <div className="flex justify-end items-center mb-4 space-x-4">
@@ -117,7 +113,7 @@ export default function Leaves() {
             type="text"
             value={searchQuery}
             onChange={handleSearchChange}
-            placeholder="Search leaves"
+            placeholder="Search agent leaves"
             className="px-4 py-2 border border-gray-300 rounded-md w-48 transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
@@ -146,21 +142,21 @@ export default function Leaves() {
               {editIndex !== null ? 'Edit Leave' : 'Add Leave'}
             </h2>
             <div className="space-y-4">
-              {/* Employee Name Field */}
+              {/* Agent Name Field */}
               <div>
-                <label htmlFor="employeeName" className="block text-sm font-medium">
-                  Employee Name
+                <label htmlFor="agentName" className="block text-sm font-medium">
+                  Agent Name
                 </label>
                 <input
                   type="text"
-                  id="employeeName"
-                  name="employeeName"
-                  value={formData.employeeName}
+                  id="agentName"
+                  name="agentName"
+                  value={formData.agentName}
                   onChange={handleInputChange}
-                  placeholder="Enter employee name"
+                  placeholder="Enter agent name"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                {formErrors.employeeName && <p className="text-red-500 text-sm">Employee name is required</p>}
+                {formErrors.agentName && <p className="text-red-500 text-sm">Agent name is required</p>}
               </div>
 
               {/* Leave Type Field */}
@@ -229,13 +225,13 @@ export default function Leaves() {
                 </select>
               </div>
 
-              {/* Add and Update Buttons */}
-              <div className="flex gap-4">
+              {/* Submit Button */}
+              <div className="flex justify-end mt-6">
                 <button
                   onClick={editIndex !== null ? handleEditLeave : handleAddLeave}
-                  className="px-6 py-2 bg-slate-500 text-white rounded-md hover:bg-slate-600 transition duration-300 ease-in-out transform hover:scale-105"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-800 transition duration-300 ease-in-out"
                 >
-                  {editIndex !== null ? 'Update' : 'Submit'}
+                  {editIndex !== null ? 'Update Leave' : 'Add Leave'}
                 </button>
               </div>
             </div>
@@ -243,77 +239,74 @@ export default function Leaves() {
         </div>
       )}
 
-
-      {/* Leaves Table */}
-      <table className="min-w-full table-auto border-collapse shadow-lg rounded-md">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="py-2 px-4 text-left text-md font-semibold">Employee Name</th>
-            <th className="py-2 px-4 text-left text-md font-semibold">Leave Type</th>
-            <th className="py-2 px-4 text-left text-md font-semibold">Start Date</th>
-            <th className="py-2 px-4 text-left text-md font-semibold">End Date</th>
-            <th className="py-2 px-4 text-left text-md font-semibold">Number of Days</th> 
-            <th className="py-2 px-4 text-left text-md font-semibold">Status</th>
-            <th className="py-2 px-4 text-left text-md font-semibold">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentLeaves.length > 0 ? (
-            currentLeaves.map((leave, index) => (
-              <tr key={index} className="border-b hover:bg-gray-50 transition duration-200 ease-in-out">
-                <td className="px-4 py-2">{leave.employeeName}</td>
-                <td className="px-4 py-2">{leave.leaveType}</td>
-                <td className="px-4 py-2">{leave.startDate}</td>
-                <td className="px-4 py-2">{leave.endDate}</td>
-                <td className="px-4 py-2">{calculateDays(leave.startDate, leave.endDate)}</td> {/* Display number of days */}
-                <td
-                  className={`px-4 py-2 ${leave.status === 'approved'
-                    ? 'text-green-500'
-                    : leave.status === 'pending'
-                      ? 'text-yellow-500'
-                      : 'text-red-500'
-                    }`}
-                >
-                  {leave.status === 'approved'
-                    ? 'Approved'
-                    : leave.status === 'pending'
-                      ? 'Pending'
-                      : 'Rejected'}
-                </td>
-                <td className="px-4 py-2 text-right">
-                  <div className="relative">
-                    {/* Edit Button - Pencil Icon */}
-                    <button
-                      onClick={() => {
-                        setFormData(leave);
-                        setIsFormVisible(true);
-                        setEditIndex(index); // Set edit mode
-                      }}
-                      className="text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
-                    >
-                      <HiOutlinePencilAlt size={20} />
-                    </button>
-
-                    {/* Delete Button - Trash Icon */}
-                    <button
-                      onClick={() => handleDeleteLeave(index)}
-                      className="ml-4 text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
-                    >
-                      <HiOutlineTrash size={20} />
-                    </button>
-                  </div>
+      <div className="mt-8">
+        <table className="min-w-full table-auto border-collapse shadow-lg rounded-md">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="py-2 px-4 text-left text-md font-semibold">Agent Name</th>
+              <th className="py-2 px-4 text-left text-md font-semibold">Leave Type</th>
+              <th className="py-2 px-4 text-left text-md font-semibold">Start Date</th>
+              <th className="py-2 px-4 text-left text-md font-semibold">End Date</th>
+              <th className="py-2 px-4 text-left text-md font-semibold">Number of Days</th>
+              <th className="py-2 px-4 text-left text-md font-semibold">Status</th>
+              <th className="py-2 px-4 text-left text-md font-semibold">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentLeaves.length > 0 ? (
+              currentLeaves.map((leave, index) => (
+                <tr key={index} className="border-b hover:bg-gray-50 transition duration-200 ease-in-out">
+                  <td className="px-4 py-2">{leave.agentName}</td>
+                  <td className="px-4 py-2">{leave.leaveType}</td>
+                  <td className="px-4 py-2">{leave.startDate}</td>
+                  <td className="px-4 py-2">{leave.endDate}</td>
+                  <td className="px-4 py-2">{calculateDays(leave.startDate, leave.endDate)}</td>
+                  <td
+                    className={`px-4 py-2 ${leave.status === 'approved'
+                      ? 'text-green-500'
+                      : leave.status === 'pending'
+                        ? 'text-yellow-500'
+                        : 'text-red-500'
+                      }`}
+                  >
+                    {leave.status === 'approved'
+                      ? 'Approved'
+                      : leave.status === 'pending'
+                        ? 'Pending'
+                        : 'Rejected'}
+                  </td>
+                  <td className="px-4 py-2 text-right">
+                    <div className="relative">
+                      <button
+                        onClick={() => {
+                          setFormData(leave);
+                          setIsFormVisible(true);
+                          setEditIndex(index);
+                        }}
+                        className="text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
+                      >
+                        <HiOutlinePencilAlt size={20} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteLeave(index)}
+                        className="ml-4 text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
+                      >
+                        <HiOutlineTrash size={20} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="px-4 py-2 text-center">
+                  No leaves found.
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="7" className="px-4 py-2 text-center">
-                No leaves found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      </div>
       {/* Pagination Controls */}
       <div className="flex justify-end mt-4">
         <div className="flex items-center">

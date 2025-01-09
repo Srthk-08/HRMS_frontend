@@ -252,7 +252,8 @@ export default function AllEmployee() {
               {selectedEmployee.firstName} {selectedEmployee.lastName}
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+            {/* Modal Content with Scrollable Body */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6 overflow-y-auto max-h-[60vh]">
               <p><strong>Email:</strong> {selectedEmployee.email}</p>
               <p><strong>Phone:</strong> {selectedEmployee.phone}</p>
               <p><strong>Designation:</strong> {selectedEmployee.designation}</p>
@@ -633,7 +634,7 @@ export default function AllEmployee() {
             <div className="mt-6 text-right">
               <button
                 onClick={handleAddEmployee}
-                className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                className="px-6 py-2 bg-slate-500 text-white rounded-md hover:bg-slate-600"
               >
                 Submit
               </button>

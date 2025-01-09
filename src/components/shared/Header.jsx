@@ -14,11 +14,8 @@ export default function Header({ toggleSidebar, isSidebarHidden }) {
   };
 
   const handleLogout = () => {
-    // Clear authentication data
     localStorage.removeItem('authToken');
     sessionStorage.removeItem('authData');
-
-    // Redirect to login page
     navigate('/login');
   };
 
@@ -30,27 +27,20 @@ export default function Header({ toggleSidebar, isSidebarHidden }) {
     <div className="bg-slate-800 h-20 px-4 flex items-center border-b border-slate-700">
       {/* Left Section: Logo and Menu Icon */}
       <div className="flex items-center space-x-4">
-        {/* Show Logo and Menu Icon when Sidebar is Hidden */}
-        {isSidebarHidden ? (
-          <>
-            <img src={logo} alt="Logo" className="h-8 hidden md:block" />
-            <HiOutlineMenu
-              className="text-white text-2xl cursor-pointer md:hidden" // Show on mobile
-              onClick={handleMenuClick} // Trigger sidebar toggle on click
-            />
-          </>
-        ) : (
-          // Show Menu Icon when Sidebar is Open (on mobile)
-          <HiOutlineMenu
-            className="text-white text-2xl cursor-pointer md:hidden" // Always show on mobile
-            onClick={handleMenuClick} // Trigger sidebar toggle on click
-          />
-        )}
+        {/* Show logo only in mobile view */}
+        <img
+          src={logo}
+          alt="Logo"
+          className={`h-8 ${!isSidebarHidden ? 'hidden' : ''} md:hidden`} // Hidden in desktop view
+        />
+        <HiOutlineMenu
+          className="text-white text-2xl cursor-pointer"
+          onClick={handleMenuClick}
+        />
       </div>
 
       {/* Right Section: Profile and Logout */}
       <div className="ml-auto flex items-center gap-4">
-        {/* Profile Section */}
         <div className="relative">
           <div
             className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center cursor-pointer"

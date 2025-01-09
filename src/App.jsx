@@ -20,6 +20,13 @@ import Policy from './components/Policy';
 import Asset from './components/Assets';
 import Profile from './components/shared/Profile';
 import Users from './components/Users';
+import AllAgents from './components/AllAgents';
+import AgentsDetail from './components/AgentsDetail';
+import AgentsLeaves from './components/AgentsLeaves';
+import AgentsStatus from './components/AgentsStatus';
+import AddHead from './components/AddHead';
+import AddPosition from './components/AddPosition';
+import HierarchyGraph from './components/HierarchyGraph';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -56,7 +63,15 @@ function App() {
           <Route path="policies" element={<Policy />} />
           <Route path="assets" element={<Asset />} />
           <Route path="users" element={<Users />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="agents/all" element={<AllAgents />} />
+          <Route path="agents/details" element={<AgentsDetail />} />
+          <Route path="agents/status" element={<AgentsStatus />} />
+          <Route path="agents/holidays" element={<Holidays />} />
+          <Route path="agents/leaves" element={<AgentsLeaves />} />
+          <Route path="hierarchy/addhead" element={<AddHead />} />
+          <Route path="hierarchy/addposition" element={<AddPosition />} />
+          <Route path="hierarchy/graph" element={<HierarchyGraph />} />
         </Route>
 
         {/* Login route */}

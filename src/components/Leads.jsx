@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { HiOutlinePencilAlt, HiOutlineTrash } from "react-icons/hi";
+import { Link } from "react-router-dom";
 
 export default function Leads() {
   const [leads, setLeads] = useState([
@@ -51,7 +52,7 @@ export default function Leads() {
         <div className="flex flex-col">
           <h1 className="text-3xl font-semibold mb-2">Leads</h1>
           <h1 className="font-semibold mb-4">
-            <span>Dashboard</span> / Leads Management
+            <span><Link to='/'>Dashboard</Link></span> / Leads Management
           </h1>
         </div>
         <div className="flex items-center space-x-4">
