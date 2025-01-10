@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import graphImage from "../assets/hierarchyreact.png";
-import graphImageMobile from "../assets/hierarchy-mobile.jpg"
-import Profile from "../assets/profile.png";
+import graphImage from "../../assets/hierarchyreact.png";
+import graphImageMobile from "../../assets/hierarchy-mobile.jpg"
+import Profile from "../../assets/profile.png";
 import { Link, useOutletContext,  } from "react-router-dom";
 
 const HierarchyGraph = () => {
