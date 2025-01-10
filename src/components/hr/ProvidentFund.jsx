@@ -257,45 +257,47 @@ export default function ProvidentFund() {
       )}
 
       {/* Display table */}
-      <table className="min-w-full table-auto border-collapse shadow-lg rounded-md mt-6">
-        <thead>
-          <tr>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md">Employee Name</th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md">Provident Fund Type</th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md">Employee Share</th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md">Organization Share</th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {funds.map((fund, index) => (
-            <tr key={index} className="border-b hover:bg-gray-50">
-              <td className="px-4 py-2">{fund.employeeName}</td>
-              <td className="px-4 py-2">{fund.providentFundType}</td>
-              <td className="px-4 py-2">{`${fund.employeeShareAmount} (${fund.employeeSharePercentage}%)`}</td>
-              <td className="px-4 py-2">{`${fund.organizationShareAmount} (${fund.organizationSharePercentage}%)`}</td>
-              <td className="px-4 py-2 flex items-center space-x-4">
-                <button
-                  onClick={() => {
-                    setFormData(fund);
-                    setIsFormVisible(true);
-                    setEditIndex(index);
-                  }}
-                  className="text-slate-500 hover:text-blue-700"
-                >
-                  <HiOutlinePencilAlt size={20} />
-                </button>
-                <button
-                  onClick={() => handleDeleteFund(index)}
-                  className="text-slate-500 hover:text-red-700"
-                >
-                  <HiOutlineTrash size={20} />
-                </button>
-              </td>
+      <div className="overflow-x-auto mt-4">
+        <table className="min-w-full table-auto border-collapse shadow-lg rounded-md mt-6">
+          <thead>
+            <tr className="bg-gray-100" > 
+              <th className="px-4 py-3 text-left border-b font-semibold text-md">Employee Name</th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md">Provident Fund Type</th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md">Employee Share</th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md">Organization Share</th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {funds.map((fund, index) => (
+              <tr key={index} className="border-b hover:bg-gray-50">
+                <td className="px-4 py-2">{fund.employeeName}</td>
+                <td className="px-4 py-2">{fund.providentFundType}</td>
+                <td className="px-4 py-2">{`${fund.employeeShareAmount} (${fund.employeeSharePercentage}%)`}</td>
+                <td className="px-4 py-2">{`${fund.organizationShareAmount} (${fund.organizationSharePercentage}%)`}</td>
+                <td className="px-4 py-2 flex items-center space-x-4">
+                  <button
+                    onClick={() => {
+                      setFormData(fund);
+                      setIsFormVisible(true);
+                      setEditIndex(index);
+                    }}
+                    className="text-slate-500 hover:text-blue-700"
+                  >
+                    <HiOutlinePencilAlt size={20} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteFund(index)}
+                    className="text-slate-500 hover:text-red-700"
+                  >
+                    <HiOutlineTrash size={20} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {/* Pagination Controls */}
       <div className="flex justify-end mt-4">
         <div className="flex items-center">

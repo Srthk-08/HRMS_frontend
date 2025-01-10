@@ -106,7 +106,7 @@ export default function Contacts() {
       <div className="flex justify-between items-center mb-4 space-x-4">
         <input
           type="text"
-          value={searchQuery}
+          value={searchQuery}   
           onChange={handleSearchChange}
           placeholder="Search contacts"
           className="px-4 py-2 border border-gray-300 rounded-md w-48 focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-200"
@@ -233,7 +233,7 @@ export default function Contacts() {
       )}
 
       {/* Contacts Table */}
-      <div className="mt-4">
+      <div className="mt-4 overflow-x-auto">
         <table className="min-w-full table-auto border-collapse shadow-lg rounded-md">
           <thead className="bg-gray-100">
             <tr>
@@ -259,9 +259,11 @@ export default function Contacts() {
                   <td className="px-4 py-2 text-right">
                     <div className="relative">
                       <button
-                        onClick={() =>
-                          setDropdownIndex(dropdownIndex === index ? null : index)
-                        }
+                        onClick={() => {
+                          setEditIndex(index); // Set the index of the contact being edited
+                          setFormData(contact); // Populate the form with the contact's data
+                          setIsFormVisible(true); // Show the form
+                        }}
                         className="text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
                       >
                         <HiOutlinePencilAlt className="text-slate-900 hover:text-blue-600" />
@@ -285,30 +287,29 @@ export default function Contacts() {
             )}
           </tbody>
         </table>
-        {/* Pagination Controls */}
-        <div className="flex justify-end mt-4">
-          <div className="flex items-center">
-            <button
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200 ease-in-out disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <span className="mx-4">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => paginate(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200 ease-in-out disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+      </div>
+      {/* Pagination Controls */}
+      <div className="flex justify-end mt-4">
+        <div className="flex items-center">
+          <button
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200 ease-in-out disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span className="mx-4">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200 ease-in-out disabled:opacity-50"
+          >
+            Next
+          </button>
         </div>
       </div>
-
     </div>
   );
 }

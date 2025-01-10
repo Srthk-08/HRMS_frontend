@@ -146,25 +146,32 @@ export default function AllEmployee() {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold mb-2">Employees</h1>
-      <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Employee</h1>
-      {/* Add Employee and Filter Section */}
-      <div className="mb-4 flex flex-wrap justify-between items-center">
+      <div className="flex justify-between items-center mb-6" >
+        <div className='flex flex-col'>
+          <h1 className="text-3xl font-semibold mb-2">Employees</h1>
+          <h1 className="font-semibold mb-4">
+            <Link to="/">Dashboard</Link> / Employee
+          </h1>
+        </div>
+        {/* Add Employee Button - Positioned in the top-right corner for mobile */}
         <button
           onClick={() => setIsFormVisible(true)}
           className="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-900"
         >
           Add Employee
         </button>
+      </div>
+      {/* Add Employee and Filter Section */}
+      <div className="mb-4 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 relative">
 
         {/* Filter Section */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 w-full sm:w-auto">
           <input
             type="text"
             value={filterDesignation}
             onChange={(e) => setFilterDesignation(e.target.value)}
             placeholder="Filter by designation"
-            className="px-4 py-2 border border-gray-300 rounded-md"
+            className="px-4 py-2 border border-gray-300 rounded-md w-full sm:w-auto"
           />
           <button
             onClick={applyFilter}
@@ -174,6 +181,8 @@ export default function AllEmployee() {
           </button>
         </div>
       </div>
+
+
 
       {/* Employee List in Card Format */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -290,7 +299,7 @@ export default function AllEmployee() {
               size={24}
             />
             <h2 className="text-xl font-semibold mb-4">Add Employee</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-h-96 overflow-y-scroll">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-h-96 overflow-y-auto pr-4">
               {/* Employee form fields */}
               {/* Employee ID Field */}
               <div>
@@ -630,7 +639,6 @@ export default function AllEmployee() {
                 />
               </div>
             </div>
-
             <div className="mt-6 text-right">
               <button
                 onClick={handleAddEmployee}

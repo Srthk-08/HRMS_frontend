@@ -114,28 +114,30 @@ export default function Expenses() {
   );
   const indexOfLastExpense = currentPage * expensesPerPage;
   const indexOfFirstExpense = indexOfLastExpense - expensesPerPage;
-  const currentExpenses = filteredExpenses.slice(indexOfFirstExpense, indexOfLastExpense);
+  const currentExpenses = Array.isArray(filteredExpenses) ? filteredExpenses.slice(indexOfFirstExpense, indexOfLastExpense) : [];
   const totalPages = Math.ceil(filteredExpenses.length / expensesPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex flex-col">
+      <div className="flex flex-col-2 sm:flex-row justify-between items-center mb-6 overflow-x-auto">
+        <div className="flex flex-col mb-4 sm:mb-0">
           <h1 className="text-3xl font-semibold mb-2">Expenses</h1>
           <h1 className="font-semibold mb-4">
             <Link to="/">Dashboard</Link> / Expenses
           </h1>
         </div>
-        <div className="flex justify-end items-center mb-4 space-x-4">
+        <div className="flex flex-col sm:flex-row justify-end items-center space-y-4 sm:space-y-0 sm:space-x-4">
+          {/* Search Bar */}
           <input
             type="text"
             value={searchQuery}
             onChange={handleSearchChange}
             placeholder="Search expenses"
-            className="px-4 py-2 border border-gray-300 rounded-md w-48 transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 border border-gray-300 rounded-md w-40 sm:w-48 transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {/* Add Expense Button */}
           <button
             onClick={() => {
               setIsFormVisible(true);
@@ -313,72 +315,81 @@ export default function Expenses() {
           </div>
         </div>
       )}
-      <table className="min-w-full table-auto border-collapse shadow-lg rounded-md">
-        <thead>
-          <tr>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
-              Item Name
-            </th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
-              Purchase From
-            </th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
-              Purchase Date
-            </th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
-              Purchased By
-            </th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
-              Amount
-            </th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
-              Paid By
-            </th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
-              Status
-            </th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentExpenses.map((expense, index) => (
-            <tr key={index} className="border-b hover:bg-gray-50">
-              <td className="px-4 py-2">{expense.itemName}</td>
-              <td className="px-4 py-2">{expense.purchaseFrom}</td>
-              <td className="px-4 py-2">{expense.purchaseDate}</td>
-              <td className="px-4 py-2">{expense.purchasedBy}</td>
-              <td className="px-4 py-2">{expense.amount}</td>
-              <td className="px-4 py-2">{expense.paidBy}</td>
-              <td
-                className={`px-4 py-2 ${expense.status === "approved" ? "text-green-500" : "text-yellow-500"
-                  }`}
-              >
-                {expense.status.charAt(0).toUpperCase() + expense.status.slice(1)}
-              </td>
-              <td className="px-4 py-2 flex items-center space-x-4">
-                <button
-                  onClick={() => {
-                    setFormData(expense);
-                    setIsFormVisible(true);
-                    setEditIndex(index);
-                  }}
-                  className="text-slate-500 hover:text-blue-700"
-                >
-                  <HiOutlinePencilAlt size={20} />
-                </button>
-                <button
-                  onClick={() => handleDeleteExpense(index)}
-                  className="text-slate-500 hover:text-red-700"
-                >
-                  <HiOutlineTrash size={20} />
-                </button>
-              </td>
+      <div className="overflow-x-auto mt-4">
+        <table className="min-w-full table-auto border-collapse shadow-lg rounded-md">
+          <thead>
+            <tr>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
+                Item Name
+              </th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
+                Purchase From
+              </th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
+                Purchase Date
+              </th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
+                Purchased By
+              </th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
+                Amount
+              </th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
+                Paid By
+              </th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
+                Status
+              </th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md tracking-wide">
+                Actions
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {currentExpenses.length > 0 ? (
+              currentExpenses.map((expense, index) => (
+                <tr key={index} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-2">{expense.itemName}</td>
+                  <td className="px-4 py-2">{expense.purchaseFrom}</td>
+                  <td className="px-4 py-2">{expense.purchaseDate}</td>
+                  <td className="px-4 py-2">{expense.purchasedBy}</td>
+                  <td className="px-4 py-2">{expense.amount}</td>
+                  <td className="px-4 py-2">{expense.paidBy}</td>
+                  <td
+                    className={`px-4 py-2 ${expense.status === "approved" ? "text-green-500" : "text-yellow-500"}`}
+                  >
+                    {expense.status.charAt(0).toUpperCase() + expense.status.slice(1)}
+                  </td>
+                  <td className="px-4 py-2 flex items-center space-x-4">
+                    <button
+                      onClick={() => {
+                        setFormData(expense);
+                        setIsFormVisible(true);
+                        setEditIndex(index);
+                      }}
+                      className="text-slate-500 hover:text-blue-700"
+                    >
+                      <HiOutlinePencilAlt size={20} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteExpense(index)}
+                      className="text-slate-500 hover:text-red-700"
+                    >
+                      <HiOutlineTrash size={20} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="px-4 py-2 text-center">
+                  No Expenses added yet
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {/* Pagination Controls */}
       <div className="flex justify-end mt-4">

@@ -94,7 +94,7 @@ export default function AllClient() {
   };
   return (
     <div>
-      <div div className="flex justify-between items-center mb-6" >
+      <div className="flex justify-between items-center mb-6" >
         <div className='flex flex-col'>
           <h1 className="text-3xl font-semibold mb-2">Client List</h1>
           <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Clients</h1>

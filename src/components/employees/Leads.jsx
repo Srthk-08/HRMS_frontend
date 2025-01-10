@@ -68,43 +68,46 @@ export default function Leads() {
       </div>
 
       {/* Display table */}
-      <table className="min-w-full table-auto border-collapse shadow-lg rounded-md mt-6">
-        <thead>
-          <tr>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md">Lead Name</th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md">Email</th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md">Project</th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md">Assigned Staff</th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md">Created</th>
-            <th className="px-4 py-3 text-left border-b font-semibold text-md">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedLeads.map((lead, index) => (
-            <tr key={index} className="border-b hover:bg-gray-50">
-              <td className="px-4 py-2">{lead.leadName}</td>
-              <td className="px-4 py-2">{lead.email}</td>
-              <td className="px-4 py-2">{lead.project}</td>
-              <td className="px-4 py-2">{lead.assignedStaff}</td>
-              <td className="px-4 py-2">{lead.created}</td>
-              <td className="px-4 py-2 flex items-center space-x-4">
-                <button
-                  // Placeholder for editing lead
-                  className="text-slate-500 hover:text-blue-700"
-                >
-                  <HiOutlinePencilAlt size={20} />
-                </button>
-                <button
-                  // Placeholder for deleting lead
-                  className="text-slate-500 hover:text-red-700"
-                >
-                  <HiOutlineTrash size={20} />
-                </button>
-              </td>
+      <div className="overflow-y-auto max-h-96">
+        <table className="min-w-full table-auto border-collapse shadow-lg rounded-md mt-6">
+          <thead>
+            <tr>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md">Lead Name</th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md">Email</th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md">Project</th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md">Assigned Staff</th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md">Created</th>
+              <th className="px-4 py-3 text-left border-b font-semibold text-md">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {paginatedLeads.map((lead, index) => (
+              <tr key={index} className="border-b hover:bg-gray-50">
+                <td className="px-4 py-2">{lead.leadName}</td>
+                <td className="px-4 py-2">{lead.email}</td>
+                <td className="px-4 py-2">{lead.project}</td>
+                <td className="px-4 py-2">{lead.assignedStaff}</td>
+                <td className="px-4 py-2">{lead.created}</td>
+                <td className="px-4 py-2 flex items-center space-x-4">
+                  <button
+                    // Placeholder for editing lead
+                    className="text-slate-500 hover:text-blue-700"
+                  >
+                    <HiOutlinePencilAlt size={20} />
+                  </button>
+                  <button
+                    // Placeholder for deleting lead
+                    className="text-slate-500 hover:text-red-700"
+                  >
+                    <HiOutlineTrash size={20} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
 
       {/* Pagination Controls */}
       <div className="flex justify-end mt-4">

@@ -205,110 +205,125 @@ export default function Projects() {
               size={24}
             />
             <h2 className="text-xl font-semibold mb-4">{editingIndex !== null ? 'Edit Project' : 'Add Project'}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="projectName" className="block text-sm font-medium">Project Name <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  id="projectName"
-                  name="projectName"
-                  value={formData.projectName}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-                {formErrors.projectName && <p className="text-red-500 text-sm">{formErrors.projectName}</p>}
-              </div>
-              <div>
-                <label htmlFor="client" className="block text-sm font-medium">Client <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  id="client"
-                  name="client"
-                  value={formData.client}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-                {formErrors.client && <p className="text-red-500 text-sm">{formErrors.client}</p>}
-              </div>
-              <div>
-                <label htmlFor="startDate" className="block text-sm font-medium">Start Date <span className="text-red-500">*</span></label>
-                <input
-                  type="date"
-                  id="startDate"
-                  name="startDate"
-                  value={formData.startDate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-                {formErrors.startDate && <p className="text-red-500 text-sm">{formErrors.startDate}</p>}
-              </div>
-              <div>
-                <label htmlFor="endDate" className="block text-sm font-medium">End Date <span className="text-red-500">*</span></label>
-                <input
-                  type="date"
-                  id="endDate"
-                  name="endDate"
-                  value={formData.endDate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-                {formErrors.endDate && <p className="text-red-500 text-sm">{formErrors.endDate}</p>}
-              </div>
-              <div>
-                <label htmlFor="rate" className="block text-sm font-medium">Rate <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  id="rate"
-                  name="rate"
-                  value={formData.rate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-                {formErrors.rate && <p className="text-red-500 text-sm">{formErrors.rate}</p>}
-              </div>
-              <div>
-                <label htmlFor="projectLeader" className="block text-sm font-medium">Project Leader <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  id="projectLeader"
-                  name="projectLeader"
-                  value={formData.projectLeader}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-                {formErrors.projectLeader && <p className="text-red-500 text-sm">{formErrors.projectLeader}</p>}
-              </div>
-              <div>
-                <label htmlFor="team" className="block text-sm font-medium">Add Team</label>
-                <input
-                  type="text"
-                  id="team"
-                  name="team"
-                  value={formData.team}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              <div>
-                <label htmlFor="files" className="block text-sm font-medium">Upload Files</label>
-                <input
-                  type="file"
-                  id="files"
-                  onChange={handleFileChange}
-                  multiple
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              <div className="col-span-2">
-                <label htmlFor="description" className="block text-sm font-medium">Description</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                  rows="4"
-                ></textarea>
+            {/* Scrollable container with padding on the right */}
+            <div className="max-h-[75vh] overflow-y-auto pr-4">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="projectName" className="block text-sm font-medium">
+                    Project Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="projectName"
+                    name="projectName"
+                    value={formData.projectName}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 pr-2 border border-gray-300 rounded-md"
+                  />
+                  {formErrors.projectName && <p className="text-red-500 text-sm">{formErrors.projectName}</p>}
+                </div>
+                <div>
+                  <label htmlFor="client" className="block text-sm font-medium">
+                    Client <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="client"
+                    name="client"
+                    value={formData.client}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 pr-2 border border-gray-300 rounded-md"
+                  />
+                  {formErrors.client && <p className="text-red-500 text-sm">{formErrors.client}</p>}
+                </div>
+                <div>
+                  <label htmlFor="startDate" className="block text-sm font-medium">
+                    Start Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    name="startDate"
+                    value={formData.startDate}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 pr-2 border border-gray-300 rounded-md"
+                  />
+                  {formErrors.startDate && <p className="text-red-500 text-sm">{formErrors.startDate}</p>}
+                </div>
+                <div>
+                  <label htmlFor="endDate" className="block text-sm font-medium">
+                    End Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    name="endDate"
+                    value={formData.endDate}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 pr-2 border border-gray-300 rounded-md"
+                  />
+                  {formErrors.endDate && <p className="text-red-500 text-sm">{formErrors.endDate}</p>}
+                </div>
+                <div>
+                  <label htmlFor="rate" className="block text-sm font-medium">
+                    Rate <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="rate"
+                    name="rate"
+                    value={formData.rate}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 pr-2 border border-gray-300 rounded-md"
+                  />
+                  {formErrors.rate && <p className="text-red-500 text-sm">{formErrors.rate}</p>}
+                </div>
+                <div>
+                  <label htmlFor="projectLeader" className="block text-sm font-medium">
+                    Project Leader <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="projectLeader"
+                    name="projectLeader"
+                    value={formData.projectLeader}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 pr-2 border border-gray-300 rounded-md"
+                  />
+                  {formErrors.projectLeader && <p className="text-red-500 text-sm">{formErrors.projectLeader}</p>}
+                </div>
+                <div>
+                  <label htmlFor="team" className="block text-sm font-medium">Add Team</label>
+                  <input
+                    type="text"
+                    id="team"
+                    name="team"
+                    value={formData.team}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 pr-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="files" className="block text-sm font-medium">Upload Files</label>
+                  <input
+                    type="file"
+                    id="files"
+                    onChange={handleFileChange}
+                    multiple
+                    className="w-full px-4 py-2 pr-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div className="col-span-1 sm:col-span-2">
+                  <label htmlFor="description" className="block text-sm font-medium">Description</label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 pr-2 border border-gray-300 rounded-md"
+                    rows="4"
+                  ></textarea>
+                </div>
               </div>
             </div>
             <div className="mt-6 text-right">
@@ -322,6 +337,7 @@ export default function Projects() {
           </div>
         </div>
       )}
+
     </div>
   );
 }
