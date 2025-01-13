@@ -1,90 +1,167 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';
-import { GiCancel } from "react-icons/gi";
+import { GiCancel } from 'react-icons/gi';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export default function Contacts() {
   const [contacts, setContacts] = useState([]);
+  const [updateList, setUpdateList] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    contact: '',
+    number: '',
     status: 'active',
   });
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [formErrors, setFormErrors] = useState({
     name: false,
     email: false,
-    contact: false,
+    number: false,
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [editIndex, setEditIndex] = useState(null);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const contactsPerPage = 5;
+  const contactsPerPage = 10;
 
-  // Dropdown menu state
-  const [dropdownIndex, setDropdownIndex] = useState(null);
+  // Get the token from cookies
+  const token = Cookies.get('authToken');
 
-  // Function to handle input changes in the form
+
+  // Fetch contacts from the backend with token authorization
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/contact', {
+          headers: {
+            Authorization: `Bearer ${token}`,  // Pass token in the Authorization header
+          },
+        });
+        if (Array.isArray(response.data)) {
+          setContacts(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching contacts:', error);
+      }
+    };
+
+    if (token) {
+      fetchContacts();
+    } else {
+      console.error('No token found, please log in');
+    }
+  }, [token, updateList]);
+
+  // Handle input changes in the form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  // Function to handle status change (active/inactive)
+  // Handle status change (active/inactive)
   const handleStatusChange = (e) => {
     setFormData((prevData) => ({ ...prevData, status: e.target.value }));
   };
 
-  // Function to validate the form before adding or updating a contact
+  // Validate form inputs
   const validateForm = () => {
     const errors = {
       name: !formData.name.trim(),
       email: !formData.email.trim(),
-      contact: !formData.contact.trim(),
+      number: !formData.number.trim(),
     };
     setFormErrors(errors);
     return !Object.values(errors).includes(true);
   };
 
-  // Function to handle form submission for adding a new contact
-  const handleAddContact = () => {
+  // Add contact
+  const handleAddContact = async () => {
+    setUpdateList(!updateList);
     if (validateForm()) {
-      setContacts([...contacts, formData]);
-      setFormData({ name: '', email: '', contact: '', status: 'active' });
-      setIsFormVisible(false);
+      try {
+        const response = await axios.post(
+          'http://localhost:3000/api/contact',
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        // Log the response to verify the data
+        console.log('Added contact:', response.data);
+
+        // Add the new contact to the contacts list
+        setContacts((prevContacts) => {
+          return [...prevContacts, response.data];
+        });
+
+        // Reset the form and close the form modal
+        setFormData({ name: '', email: '', number: '', status: 'active' });
+        setIsFormVisible(false);
+      } catch (error) {
+        console.error('Error adding contact:', error);
+      }
     }
   };
 
-  // Function to handle editing an existing contact
-  const handleEditContact = () => {
+  // Edit contact
+  const handleEditContact = async () => {
+    setUpdateList(!updateList);
     if (validateForm()) {
-      const updatedContacts = [...contacts];
-      updatedContacts[editIndex] = formData;
-      setContacts(updatedContacts);
-      setFormData({ name: '', email: '', contact: '', status: 'active' });
-      setIsFormVisible(false);
-      setEditIndex(null);
+      try {
+        const response = await axios.put(
+          `http://localhost:3000/api/contact/${formData._id}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        // Update the contact list with the updated contact
+        const updatedContacts = contacts.map((contact) =>
+          contact._id === formData._id ? response.data : contact
+        );
+        setContacts(updatedContacts);
+
+        // Reset the form and close the form modal
+        setFormData({ name: '', email: '', number: '', status: 'active' });
+        setIsFormVisible(false);
+        setEditIndex(null);
+      } catch (error) {
+        console.error('Error updating contact:', error);
+      }
     }
   };
 
-  // Function to handle deleting a contact
-  const handleDeleteContact = (index) => {
-    const updatedContacts = contacts.filter((_, i) => i !== index);
-    setContacts(updatedContacts);
-    setDropdownIndex(null);
+  // Delete contact
+  const handleDeleteContact = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/contact/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setContacts(contacts.filter((contact) => contact._id !== id));
+    } catch (error) {
+      console.error('Error deleting contact:', error);
+    }
   };
 
-  // Function to handle search input change
+  // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
   // Filter contacts based on search query
   const filteredContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(searchQuery.toLowerCase())
+    contact.name && contact.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Paginate the filtered contacts
@@ -92,41 +169,44 @@ export default function Contacts() {
   const indexOfFirstContact = indexOfLastContact - contactsPerPage;
   const currentContacts = filteredContacts.slice(indexOfFirstContact, indexOfLastContact);
 
-  // Function to change the page
+  // Change the page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Calculate the total number of pages
+  // Total number of pages
   const totalPages = Math.ceil(filteredContacts.length / contactsPerPage);
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-semibold mb-2">Contacts</h1>
-      <h1 className="font-semibold mb-4"><Link to="/" >Dashboard</Link> / Contacts</h1>
-      {/* Search Bar and Add Contact Button */}
-      <div className="flex justify-between items-center mb-4 space-x-4">
-        <input
-          type="text"
-          value={searchQuery}   
-          onChange={handleSearchChange}
-          placeholder="Search contacts"
-          className="px-4 py-2 border border-gray-300 rounded-md w-48 focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-200"
-        />
-        <button
-          onClick={() => {
-            setIsFormVisible(true);
-            setEditIndex(null); // Reset for adding new contact
-          }}
-          className="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-900 transition duration-300"
-        >
-          Add Contact
-        </button>
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col">
+          <h1 className="text-3xl font-semibold mb-2">Contacts</h1>
+          <h1 className="font-semibold mb-4">
+            <Link to="/">Dashboard</Link> / Contacts
+          </h1>
+        </div>
+        <div className="flex justify-end items-center mb-4 space-x-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search contacts"
+            className="px-4 py-2 border border-gray-300 rounded-md w-48 focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-200"
+          />
+          <button
+            onClick={() => {
+              setIsFormVisible(true);
+              setEditIndex(null);
+            }}
+            className="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-900 transition duration-300"
+          >
+            Add Contact
+          </button>
+        </div>
       </div>
 
-      {/* Popover Form to add or edit a contact */}
       {isFormVisible && (
         <div className="absolute inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white w-full max-w-md p-6 rounded-md shadow-lg relative">
-            {/* Close Icon */}
             <GiCancel
               onClick={() => setIsFormVisible(false)}
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer"
@@ -136,7 +216,6 @@ export default function Contacts() {
               {editIndex !== null ? 'Edit Contact' : 'Add Contact'}
             </h2>
             <div className="space-y-4">
-              {/* Name Field */}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                   Name
@@ -153,7 +232,6 @@ export default function Contacts() {
                 {formErrors.name && <p className="text-red-500 text-sm">Name is required</p>}
               </div>
 
-              {/* Email Field */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   Email
@@ -170,24 +248,22 @@ export default function Contacts() {
                 {formErrors.email && <p className="text-red-500 text-sm">Email is required</p>}
               </div>
 
-              {/* Contact Field */}
               <div>
-                <label htmlFor="contact" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="number" className="block text-sm font-medium text-gray-700">
                   Contact
                 </label>
                 <input
                   type="text"
-                  id="contact"
-                  name="contact"
-                  value={formData.contact}
+                  id="number"
+                  name="number"
+                  value={formData.number}
                   onChange={handleInputChange}
                   placeholder="Enter contact number"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
-                {formErrors.contact && <p className="text-red-500 text-sm">Contact is required</p>}
+                {formErrors.number && <p className="text-red-500 text-sm">Contact is required</p>}
               </div>
 
-              {/* Status Field (Radio Buttons) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Status</label>
                 <div className="flex items-center gap-4">
@@ -218,7 +294,6 @@ export default function Contacts() {
                 </div>
               </div>
 
-              {/* Add Button */}
               <div className="flex gap-4">
                 <button
                   onClick={editIndex !== null ? handleEditContact : handleAddContact}
@@ -232,62 +307,45 @@ export default function Contacts() {
         </div>
       )}
 
-      {/* Contacts Table */}
-      <div className="mt-4 overflow-x-auto">
-        <table className="min-w-full table-auto border-collapse shadow-lg rounded-md">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-2 text-left border-b">Name</th>
-              <th className="px-4 py-2 text-left border-b">Email</th>
-              <th className="px-4 py-2 text-left border-b">Contact</th>
-              <th className="px-4 py-2 text-left border-b">Status</th>
-              <th className="px-4 py-2 text-left border-b">Actions</th>
+      <table className="min-w-full table-auto border-collapse shadow-lg rounded-md">
+        <thead>
+          <tr className="bg-gray-100 border-b">
+            <th className="py-2 px-4 text-left text-md font-semibold">Name</th>
+            <th className="py-2 px-4 text-left text-md font-semibold">Email</th>
+            <th className="py-2 px-4 text-left text-md font-semibold">Contact</th>
+            <th className="py-2 px-4 text-left text-md font-semibold">Status</th>
+            <th className="py-2 px-4 text-left text-md font-semibold">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentContacts.map((contact, index) => (
+            <tr key={contact._id} className='border-b hover:bg-gray-50 transition duration-200 ease-in-out'>
+              <td className="px-4 py-2">{contact.name}</td>
+              <td className="px-4 py-2">{contact.email}</td>
+              <td className="px-4 py-2">{contact.number}</td>
+              <td className="px-4 py-2">{contact.status}</td>
+              <td className="px-4 py-2">
+                <button
+                  onClick={() => {
+                    setEditIndex(index);
+                    setFormData(contact);
+                    setIsFormVisible(true);
+                  }}
+                  className="text-slate-500 hover:text-blue-700"
+                >
+                  <HiOutlinePencilAlt size={20} />
+                </button>
+                <button
+                  onClick={() => handleDeleteContact(contact._id)}
+                  className="ml-2 text-slate-500 hover:text-red-700"
+                >
+                  <HiOutlineTrash size={20} />
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {currentContacts.length > 0 ? (
-              currentContacts.map((contact, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50 transition duration-200 ease-in-out">
-                  <td className="px-4 py-2">{contact.name}</td>
-                  <td className="px-4 py-2">{contact.email}</td>
-                  <td className="px-4 py-2">{contact.contact}</td>
-                  <td
-                    className={`px-4 py-2 ${contact.status === 'active' ? 'text-green-500' : 'text-red-500'}`}
-                  >
-                    {contact.status === 'active' ? 'Active' : 'Inactive'}
-                  </td>
-                  <td className="px-4 py-2 text-right">
-                    <div className="relative">
-                      <button
-                        onClick={() => {
-                          setEditIndex(index); // Set the index of the contact being edited
-                          setFormData(contact); // Populate the form with the contact's data
-                          setIsFormVisible(true); // Show the form
-                        }}
-                        className="text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
-                      >
-                        <HiOutlinePencilAlt className="text-slate-900 hover:text-blue-600" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteContact(index)}
-                        className="ml-2 text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
-                      >
-                        <HiOutlineTrash className="text-slate-900 hover:text-red-600" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="px-4 py-2 text-center">
-                  No contacts found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
       {/* Pagination Controls */}
       <div className="flex justify-end mt-4">
         <div className="flex items-center">

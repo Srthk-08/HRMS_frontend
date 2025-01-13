@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
 import { GiCancel } from "react-icons/gi";
+import Cookies from 'js-cookie';
 
 export default function Holidays() {
   // State to store holidays and form inputs
@@ -12,46 +13,103 @@ export default function Holidays() {
   const [selectedHolidayIndex, setSelectedHolidayIndex] = useState(null);
   const [dropdownVisibleIndex, setDropdownVisibleIndex] = useState(null); // State for dropdown visibility
 
+  const apiUrl = 'http://localhost:3000/api/holidays'; // Update with your API URL
+  const token = Cookies.get('authToken'); // Get the token from cookies
+ 
+  // Fetch holidays from backend
+  const fetchHolidays = async () => {
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`, // Attach token to Authorization header
+        },
+      });
+      if (!response.ok) throw new Error('Failed to fetch holidays');
+      const data = await response.json();
+      setHolidays(data);
+    } catch (error) {
+      console.error("Error fetching holidays:", error);
+    }
+  };
+
+  // Fetch holidays when the component mounts
+  useEffect(() => {
+    if (token) {
+      fetchHolidays();
+    } else {
+      console.error("Authentication token not found");
+    }
+  }, [token]);
+
   // Handler to add or update holiday
-  const saveHoliday = (e) => {
+  const saveHoliday = async (e) => {
     e.preventDefault();
 
     if (holidayName && holidayDate) {
       const day = new Date(holidayDate).toLocaleString('en-US', { weekday: 'long' }); // Get the day of the week
 
-      if (selectedHolidayIndex !== null) {
-        // If editing, update the holiday
-        const updatedHolidays = holidays.map((holiday, index) =>
-          index === selectedHolidayIndex
-            ? { ...holiday, name: holidayName, date: holidayDate, day }
-            : holiday
-        );
-        setHolidays(updatedHolidays);
-      } else {
-        // If adding, add the new holiday
-        setHolidays([...holidays, { name: holidayName, date: holidayDate, day }]);
-      }
+      const holidayData = { title: holidayName, date: holidayDate, day };
 
-      // Reset the form fields and hide the form
-      setHolidayName('');
-      setHolidayDate('');
-      setIsFormVisible(false);
-      setSelectedHolidayIndex(null); // Reset selected index after saving
+      try {
+        const headers = {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        };
+
+        if (selectedHolidayIndex !== null) {
+          // If editing, update the holiday
+          const response = await fetch(`${apiUrl}/${holidays[selectedHolidayIndex]._id}`, {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify(holidayData),
+          });
+          if (!response.ok) throw new Error('Failed to update holiday');
+          fetchHolidays(); // Refresh the holidays list
+        } else {
+          // If adding, add the new holiday
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(holidayData),
+          });
+          if (!response.ok) throw new Error('Failed to add holiday');
+          fetchHolidays(); // Refresh the holidays list
+        }
+
+        // Reset the form fields and hide the form
+        setHolidayName('');
+        setHolidayDate('');
+        setIsFormVisible(false);
+        setSelectedHolidayIndex(null); // Reset selected index after saving
+      } catch (error) {
+        console.error("Error saving holiday:", error);
+      }
     } else {
       alert('Please fill out both fields');
     }
   };
 
   // Handler to delete holiday
-  const deleteHoliday = (index) => {
-    const newHolidays = holidays.filter((_, i) => i !== index);
-    setHolidays(newHolidays);
+  const deleteHoliday = async (index) => {
+    try {
+      const response = await fetch(`${apiUrl}/${holidays[index]._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to delete holiday');
+      fetchHolidays(); // Refresh the holidays list after deletion
+    } catch (error) {
+      console.error("Error deleting holiday:", error);
+    }
   };
 
-  // Handler to edit holiday (example)
+  // Handler to edit holiday
   const editHoliday = (index) => {
     const holiday = holidays[index];
-    setHolidayName(holiday.name);
+    setHolidayName(holiday.title);
     setHolidayDate(holiday.date);
     setSelectedHolidayIndex(index);
     setIsFormVisible(true); // Open the form to edit
@@ -147,8 +205,12 @@ export default function Holidays() {
             ) : (
               holidays.map((holiday, index) => (
                 <tr key={index} className="border-b hover:bg-gray-100">
-                  <td className="py-3 px-4">{holiday.name}</td>
-                  <td className="py-3 px-4">{holiday.date}</td>
+                  <td className="py-3 px-4">{holiday.title}</td>
+                  <td className="py-3 px-4">{new Date(holiday.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}</td>
                   <td className="py-3 px-4">{holiday.day}</td>
                   <td className="py-3 px-4 relative">
                     <button

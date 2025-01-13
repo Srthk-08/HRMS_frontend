@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 import { HiOutlineLogout } from 'react-icons/hi';
 import logo from '../../assets/logo.png';
@@ -18,12 +18,24 @@ const linkClasses =
 
 const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   // State to track which dropdown is open
   const [openDropdown, setOpenDropdown] = useState(null);
 
-  const handleLogout = () => {
-    console.log('Logging out...');
+  const handleLogout = async () => {
+    try {
+      // Clear client-side cookies or localStorage if needed
+      localStorage.removeItem('adminToken'); // If using localStorage
+      // Or clear cookies (for example, JWT token cookie)
+      document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'; // Clear the cookie
+
+      // Redirect to the login page
+      navigate('/login');
+    }
+    catch(err){
+      console.log(error);
+    }
   };
 
   const closeDropdown = () => setOpenDropdown(null);
@@ -102,7 +114,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
         ))}
         <div
           className={classNames('text-red-400 cursor-pointer', linkClasses)}
-          onClick={handleLogout}
+          onClick={handleLogout} // Logout on button click
         >
           <span className="text-xl">
             <HiOutlineLogout />
