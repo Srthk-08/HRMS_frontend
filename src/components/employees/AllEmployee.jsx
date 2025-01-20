@@ -1,7 +1,8 @@
+
 import { Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';  // Import Axios
-import Cookies from 'js-cookie'; // Import js-cookie for cookie management
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import { HiOutlineDotsVertical } from 'react-icons/hi';
 import { GiCancel } from "react-icons/gi";
 
@@ -9,23 +10,30 @@ export default function AllEmployee() {
   const [employees, setEmployees] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
+
+  const generateemployee_id = () => {
+    const min = 10000;
+    const max = 99999;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
   const [formData, setFormData] = useState({
-    employeeId: '',  // This will be auto-generated
-    firstName: '',
-    lastName: '',
+    employee_id: generateemployee_id(),
+    first_name: '',
+    last_name: '',
     email: '',
-    phone: '',
+    number: '',
     company: '',
     salary: '',
-    reportingManager: '',
+    reporting_manager: '',
     area: '',
-    employeeType: '',
-    dateOfJoining: '',
+    employee_type: '',
+    date_of_joining: '',
     department: '',
     designation: '',
-    employeeImage: '',
-    adharNo: '',
-    permanentAddress: '',
+    employee_picture: '',
+    adhar_no: '',
+    permanent_address: '',
     birthday: '',
     religion: '',
     pincode: '',
@@ -39,28 +47,16 @@ export default function AllEmployee() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  // Function to generate a random 5-digit employee ID
-  const generateEmployeeId = () => {
-    const min = 10000; // Minimum 5-digit number
-    const max = 99999; // Maximum 5-digit number
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  };
-
-  // Fetch employees from the backend with cookie-based authentication
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
         const token = Cookies.get('authToken');
-        console.log(token);  // Get the auth token from cookies
         if (token) {
-          // Include the token in the request header for authorization
           const response = await axios.get('http://localhost:3000/api/employees', {
-            headers: {
-              Authorization: `Bearer ${token}`,  // Attach token in Authorization header
-            }
+            headers: { Authorization: `Bearer ${token}` },
           });
-          setEmployees(response.data);
-          setFilteredEmployees(response.data); // Set filtered employees initially
+          setEmployees(response.data); // Ensure each employee object includes `_id`
+          setFilteredEmployees(response.data);
         } else {
           console.error("Authentication token not found.");
         }
@@ -68,9 +64,8 @@ export default function AllEmployee() {
         console.error("Error fetching employees:", error);
       }
     };
-
     fetchEmployees();
-  }, []);
+  }, [isFormVisible,menuVisible]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -90,67 +85,66 @@ export default function AllEmployee() {
 
   const validateForm = () => {
     const errors = {};
+
     Object.keys(formData).forEach((key) => {
+      const value = formData[key];
       if (
-        !formData[key].trim() &&
-        ['employeeId', 'firstName', 'lastName', 'email', 'salary', 'reportingManager', 'area', 'company', 'department', 'designation'].includes(key)
+        (!value || (typeof value === 'string' && !value.trim())) &&
+        ['first_name', 'last_name', 'email', 'salary', 'reporting_manager', 'area', 'company', 'department', 'designation'].includes(key)
       ) {
-        errors[key] = `${key.replace(/([A-Z])/g, ' $1')} is required`;
+        const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ');
+        errors[key] = `${formattedKey.charAt(0).toUpperCase() + formattedKey.slice(1)} is required`;
       }
     });
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleAddEmployee = async () => {
-    console.log(formData);
     if (validateForm()) {
       try {
-        const token = Cookies.get('authToken');  // Get the auth token from cookies
+        const token = Cookies.get('authToken');
         if (!token) {
           console.error("Authentication token not found.");
           return;
         }
 
-        const headers = {
-          Authorization: `Bearer ${token}`,  // Attach token in Authorization header
-        };
-
-        console.log("Form data being sent:", formData);  // Log formData for debugging
+        const headers = { Authorization: `Bearer ${token}` };
 
         if (editingIndex !== null) {
-          // Edit existing employee
-          const response = await axios.put(`http://localhost:3000/api/employees/${formData.employeeId}`, formData, { headers });
+          const employeeId = employees[editingIndex]._id; // Use MongoDB's _id field
+          const response = await axios.put(`http://localhost:3000/api/employees/${employeeId}`, formData, { headers });
           console.log("Employee updated successfully:", response.data);
           const updatedEmployees = [...employees];
-          updatedEmployees[editingIndex] = formData;
+          updatedEmployees[editingIndex] = response.data; // Use the updated employee from the server response
           setEmployees(updatedEmployees);
           setEditingIndex(null);
-        } else {
+        }
+        else {
           // Add new employee
           const response = await axios.post('http://localhost:3000/api/employees', formData, { headers });
           console.log("Employee added successfully:", response.data);
-          setEmployees([...employees, formData]);
+          setEmployees([...employees, response.data]); // Add new employee from server response
         }
 
-        // Reset form data
         setFormData({
-          employeeId: '', // Employee ID will be auto-generated when needed
-          firstName: '',
-          lastName: '',
+          employee_id: generateemployee_id(),
+          first_name: '',
+          last_name: '',
           email: '',
-          phone: '',
+          number: '',
           company: '',
           salary: '',
-          reportingManager: '',
+          reporting_manager: '',
           area: '',
-          employeeType: '',
-          dateOfJoining: '',
+          employee_type: '',
+          date_of_joining: '',
           department: '',
           designation: '',
-          employeeImage: '',
-          adharNo: '',
-          permanentAddress: '',
+          employee_picture: '',
+          adhar_no: '',
+          permanent_address: '',
           birthday: '',
           religion: '',
           pincode: '',
@@ -183,17 +177,15 @@ export default function AllEmployee() {
   };
 
   const handleDeleteEmployee = async (index) => {
-    const employeeId = employees[index].employeeId;
+    const employeeId = employees[index]._id; // Use ObjectId for deletion
     try {
-      const token = Cookies.get('authToken');  // Get the auth token from cookies
+      const token = Cookies.get('authToken');
       if (!token) {
         console.error("Authentication token not found.");
         return;
       }
 
-      const headers = {
-        Authorization: `Bearer ${token}`,  // Attach token in Authorization header
-      };
+      const headers = { Authorization: `Bearer ${token}` };
 
       await axios.delete(`http://localhost:3000/api/employees/${employeeId}`, { headers });
       const updatedEmployees = employees.filter((_, i) => i !== index);
@@ -203,6 +195,7 @@ export default function AllEmployee() {
       console.error("Error deleting employee:", error);
     }
   };
+
 
   const toggleMenu = (index) => {
     setMenuVisible(menuVisible === index ? null : index);
@@ -218,12 +211,9 @@ export default function AllEmployee() {
     setSelectedEmployee(null);
   };
 
-  const openAddEmployeeForm = () => {
-    setFormData({
-      ...formData,
-      employeeId: generateEmployeeId(), // Auto-generate Employee ID
-    });
-    setIsFormVisible(true);
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toISOString().slice(0, 10); // Extracts the "yyyy-MM-dd" part
   };
 
   return (
@@ -271,16 +261,16 @@ export default function AllEmployee() {
         {filteredEmployees.length > 0 ? (
           filteredEmployees.map((employee, index) => (
             <div
-              key={employee.employeeId}
+              key={employee.employee_id}
               className="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 relative"
             >
               <img
-                src={employee.employeeImage || 'https://via.placeholder.com/150'}
+                src={employee.employee_picture || 'https://via.placeholder.com/150'}
                 alt="Employee"
                 className="w-32 h-32 rounded-full mx-auto mb-4 object-cover cursor-pointer"
                 onClick={() => openEmployeeModal(employee)} // Open modal on click
               />
-              <h3 className="text-lg font-semibold text-center">{employee.firstName} {employee.lastName}</h3>
+              <h3 className="text-lg font-semibold text-center">{employee.first_name} {employee.last_name}</h3>
               <p className="text-center text-gray-500">{employee.email}</p>
               <p className="text-center text-gray-700 mt-2">{employee.designation}</p>
 
@@ -333,36 +323,36 @@ export default function AllEmployee() {
             />
 
             {/* Display Employee Profile Picture at the Top */}
-            {selectedEmployee.employeeImage && (
+            {selectedEmployee.employee_picture && (
               <img
-                src={selectedEmployee.employeeImage}
+                src={selectedEmployee.employee_picture}
                 alt="Employee Profile"
                 className="w-24 h-24 rounded-full object-cover mx-auto mb-4"
               />
             )}
 
             <h2 className="text-xl font-semibold mb-4 text-center">
-              {selectedEmployee.firstName} {selectedEmployee.lastName}
+              {selectedEmployee.first_name} {selectedEmployee.last_name}
             </h2>
 
             {/* Modal Content with Scrollable Body */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6 overflow-y-auto max-h-[60vh]">
               <p><strong>Email:</strong> {selectedEmployee.email}</p>
-              <p><strong>Phone:</strong> {selectedEmployee.phone}</p>
+              <p><strong>Phone:</strong> {selectedEmployee.number}</p>
               <p><strong>Designation:</strong> {selectedEmployee.designation}</p>
               <p><strong>Salary:</strong> {selectedEmployee.salary}</p>
-              <p><strong>Reporting Manager:</strong> {selectedEmployee.reportingManager}</p>
+              <p><strong>Reporting Manager:</strong> {selectedEmployee.reporting_manager}</p>
               <p><strong>Company:</strong> {selectedEmployee.company}</p>
-              <p><strong>Date of Joining:</strong> {selectedEmployee.dateOfJoining}</p>
-              <p><strong>Employee Type:</strong> {selectedEmployee.employeeType}</p>
+              <p><strong>Date of Joining:</strong> {selectedEmployee.date_of_joining}</p>
+              <p><strong>Employee Type:</strong> {selectedEmployee.employee_type}</p>
               <p><strong>Department:</strong> {selectedEmployee.department}</p>
               <p><strong>Birthday:</strong> {selectedEmployee.birthday}</p>
-              <p><strong>Address:</strong> {selectedEmployee.permanentAddress}</p>
+              <p><strong>Address:</strong> {selectedEmployee.permanent_address}</p>
 
               {/* Edit Button */}
               <div className="col-span-2 text-center mt-4">
                 <button
-                  onClick={() => handleEditEmployee(selectedEmployee.employeeId)}
+                  onClick={() => handleEditEmployee(selectedEmployee.employee_id)}
                   className="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-900"
                 >
                   Edit Employee
@@ -387,50 +377,50 @@ export default function AllEmployee() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-h-96 overflow-y-auto pr-4">
               {/* Employee form fields */}
               <div>
-                <label htmlFor="employeeId" className="block text-sm font-medium">
+                <label htmlFor="employee_id" className="block text-sm font-medium">
                   Employee ID <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  id="employeeId"
-                  name="employeeId"
-                  value={formData.employeeId || generateEmployeeId()}
-                  onChange={handleInputChange}
+                  id="employee_id"
+                  name="employee_id"
+                  value={formData.employee_id || generateemployee_id()}
+                  disabled
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 />
-                {formErrors.employeeId && <p className="text-red-500 text-sm">{formErrors.employeeId}</p>}
+                {formErrors.employee_id && <p className="text-red-500 text-sm">{formErrors.employee_id}</p>}
               </div>
 
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium">
+                <label htmlFor="first_name" className="block text-sm font-medium">
                   First Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  id="firstName"
-                  name="firstName"
-                  value={formData.firstName || ""}
+                  id="first_name"
+                  name="first_name"
+                  value={formData.first_name || ""}
                   onChange={handleInputChange}
                   placeholder="Enter first name"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 />
-                {formErrors.firstName && <p className="text-red-500 text-sm">{formErrors.firstName}</p>}
+                {formErrors.first_name && <p className="text-red-500 text-sm">{formErrors.first_name}</p>}
               </div>
 
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium">
+                <label htmlFor="last_name" className="block text-sm font-medium">
                   Last Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  id="lastName"
-                  name="lastName"
-                  value={formData.lastName || ""}
+                  id="last_name"
+                  name="last_name"
+                  value={formData.last_name || ""}
                   onChange={handleInputChange}
                   placeholder="Enter last name"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 />
-                {formErrors.lastName && <p className="text-red-500 text-sm">{formErrors.lastName}</p>}
+                {formErrors.last_name && <p className="text-red-500 text-sm">{formErrors.last_name}</p>}
               </div>
 
               <div>
@@ -450,19 +440,19 @@ export default function AllEmployee() {
               </div>
 
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium">
+                <label htmlFor="number" className="block text-sm font-medium">
                   Phone
                 </label>
                 <input
                   type="text"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone || ""}
+                  id="number"
+                  name="number"
+                  value={formData.number || ""}
                   onChange={handleInputChange}
-                  placeholder="Enter phone number"
+                  placeholder="Enter number number"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 />
-                {formErrors.phone && <p className="text-red-500 text-sm">{formErrors.phone}</p>}
+                {formErrors.number && <p className="text-red-500 text-sm">{formErrors.number}</p>}
               </div>
 
               <div>
@@ -482,29 +472,29 @@ export default function AllEmployee() {
               </div>
 
               <div>
-                <label htmlFor="reportingManager" className="block text-sm font-medium">
+                <label htmlFor="reporting_manager" className="block text-sm font-medium">
                   Reporting Manager <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  id="reportingManager"
-                  name="reportingManager"
-                  value={formData.reportingManager || ""}
+                  id="reporting_manager"
+                  name="reporting_manager"
+                  value={formData.reporting_manager || ""}
                   onChange={handleInputChange}
                   placeholder="Enter reporting manager"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 />
-                {formErrors.reportingManager && <p className="text-red-500 text-sm">{formErrors.reportingManager}</p>}
+                {formErrors.reporting_manager && <p className="text-red-500 text-sm">{formErrors.reporting_manager}</p>}
               </div>
 
               <div>
-                <label htmlFor="employeeType" className="block text-sm font-medium">
+                <label htmlFor="employee_type" className="block text-sm font-medium">
                   Employee Type <span className="text-red-500">*</span>
                 </label>
                 <select
-                  id="employeeType"
-                  name="employeeType"
-                  value={formData.employeeType || ""}
+                  id="employee_type"
+                  name="employee_type"
+                  value={formData.employee_type || ""}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 >
@@ -513,22 +503,22 @@ export default function AllEmployee() {
                   <option value="Contract">Contract</option>
                   <option value="Intern">Intern</option>
                 </select>
-                {formErrors.employeeType && <p className="text-red-500 text-sm">{formErrors.employeeType}</p>}
+                {formErrors.employee_type && <p className="text-red-500 text-sm">{formErrors.employee_type}</p>}
               </div>
 
               <div>
-                <label htmlFor="dateOfJoining" className="block text-sm font-medium">
+                <label htmlFor="date_of_joining" className="block text-sm font-medium">
                   Date of Joining <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
-                  id="dateOfJoining"
-                  name="dateOfJoining"
-                  value={formData.dateOfJoining || ""}
+                  id="date_of_joining"
+                  name="date_of_joining"
+                  value={formData.date_of_joining ? formatDate(formData.date_of_joining) : ""}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 />
-                {formErrors.dateOfJoining && <p className="text-red-500 text-sm">{formErrors.dateOfJoining}</p>}
+                {formErrors.date_of_joining && <p className="text-red-500 text-sm">{formErrors.date_of_joining}</p>}
               </div>
 
               <div>
@@ -596,19 +586,19 @@ export default function AllEmployee() {
               </div>
 
               <div>
-                <label htmlFor="employeeImage" className="block text-sm font-medium">
+                <label htmlFor="employee_picture" className="block text-sm font-medium">
                   Employee Image
                 </label>
                 <input
                   type="file"
-                  id="employeeImage"
-                  onChange={(e) => handleImageChange(e, 'employeeImage')}
+                  id="employee_picture"
+                  onChange={(e) => handleImageChange(e, 'employee_picture')}
                   accept="image/*"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 />
-                {formData.employeeImage && (
+                {formData.employee_picture && (
                   <img
-                    src={formData.employeeImage}
+                    src={formData.employee_picture}
                     alt="Employee"
                     className="w-32 h-32 rounded-full mx-auto mt-4 object-cover"
                   />
@@ -616,28 +606,28 @@ export default function AllEmployee() {
               </div>
 
               <div>
-                <label htmlFor="adharNo" className="block text-sm font-medium">
+                <label htmlFor="adhar_no" className="block text-sm font-medium">
                   Aadhar No
                 </label>
                 <input
                   type="text"
-                  id="adharNo"
-                  name="adharNo"
-                  value={formData.adharNo || ""}
+                  id="adhar_no"
+                  name="adhar_no"
+                  value={formData.adhar_no || ""}
                   onChange={handleInputChange}
-                  placeholder="Enter Aadhar number"
+                  placeholder="Enter Aadhar "
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 />
               </div>
 
               <div>
-                <label htmlFor="permanentAddress" className="block text-sm font-medium">
+                <label htmlFor="permanent_address" className="block text-sm font-medium">
                   Permanent Address
                 </label>
                 <textarea
-                  id="permanentAddress"
-                  name="permanentAddress"
-                  value={formData.permanentAddress || ""}
+                  id="permanent_address"
+                  name="permanent_address"
+                  value={formData.permanent_address || ""}
                   onChange={handleInputChange}
                   placeholder="Enter permanent address"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
@@ -652,7 +642,7 @@ export default function AllEmployee() {
                   type="date"
                   id="birthday"
                   name="birthday"
-                  value={formData.birthday || ""}
+                  value={formData.birthday ? formatDate(formData.birthday) : ""}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 />

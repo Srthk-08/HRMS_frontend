@@ -1,23 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { GiCancel } from "react-icons/gi";
 import { HiOutlinePencilAlt, HiOutlineTrash } from 'react-icons/hi';
+import Cookies from 'js-cookie';
+import axios from 'axios';
 
 export default function Leaves() {
   const [leaves, setLeaves] = useState([]);
+  const [employees, setEmployees] = useState([]); // New state to hold employees
   const [formData, setFormData] = useState({
-    employeeName: '',
-    leaveType: '',
-    startDate: '',
-    endDate: '',
-    status: 'approved',
+    employee_id: '',
+    leave_type: 'Sick Leave',
+    from_date: '',
+    to_date: '',
+    status: 'Pending',
+    leave_reason: '',
   });
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [formErrors, setFormErrors] = useState({
-    employeeName: false,
-    leaveType: false,
-    startDate: false,
-    endDate: false,
+    employee_id: false,
+    leave_type: false,
+    from_date: false,
+    to_date: false,
+    leave_reason: false,
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [editIndex, setEditIndex] = useState(null); // Track which leave to edit
@@ -26,82 +31,180 @@ export default function Leaves() {
   const [currentPage, setCurrentPage] = useState(1);
   const leavesPerPage = 5;
 
-  // Dropdown menu state
-  const [dropdownIndex, setDropdownIndex] = useState(null); // Track the index of the dropdown menu
+  // Fetch employees and leaves when component mounts
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const token = Cookies.get('authToken');
+        if (token) {
+          const response = await axios.get('http://localhost:3000/api/employees', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setEmployees(response.data);
+        } else {
+          console.error("Authentication token not found.");
+        }
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+      }
+    };
+    fetchEmployees();
+  }, []);
 
-  // Function to handle input changes in the form
+  useEffect(() => {
+    const fetchLeaves = async () => {
+      try {
+        const token = Cookies.get('authToken');
+        if (token) {
+          const response = await axios.get('http://localhost:3000/api/leaves', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          console.log(response.data)
+          setLeaves(response.data);
+        } else {
+          console.error("Authentication token not found.");
+        }
+      } catch (error) {
+        console.error("Error fetching leaves:", error);
+      }
+    };
+    fetchLeaves();
+  }, [isFormVisible]);
+
+  // Handle input changes in the form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  // Function to validate the form before adding or updating a leave
+  // Validate form before submission
   const validateForm = () => {
     const errors = {
-      employeeName: !formData.employeeName.trim(),
-      leaveType: !formData.leaveType.trim(),
-      startDate: !formData.startDate.trim(),
-      endDate: !formData.endDate.trim(),
+      employee_id: !formData.employee_id,
+      leave_type: !formData.leave_type.trim(),
+      from_date: !formData.from_date || isNaN(new Date(formData.from_date).getTime()),
+      to_date: !formData.to_date || isNaN(new Date(formData.to_date).getTime()),
+      leave_reason: !formData.leave_reason.trim(),
     };
     setFormErrors(errors);
     return !Object.values(errors).includes(true); // Return true if no errors
   };
 
-  // Function to handle form submission for adding a new leave
-  const handleAddLeave = () => {
+  // Add new leave
+  const handleAddLeave = async () => {
     if (validateForm()) {
-      setLeaves([...leaves, formData]);
-      setFormData({ employeeName: '', leaveType: '', startDate: '', endDate: '', status: 'approved' });
-      setIsFormVisible(false);
+      console.log(formData)
+      try {
+        const token = Cookies.get('authToken');
+        if (!token) {
+          console.error("Authentication token not found.");
+          return;
+        }
+        const headers = { Authorization: `Bearer ${token}` };
+        const response = await axios.post('http://localhost:3000/api/leaves', formData, { headers });
+        const newLeave = response.data;
+        setLeaves([...leaves, newLeave]);
+        setFormData({ employee_id: '', leave_type: '', from_date: '', to_date: '', status: 'Pending', leave_reason: '' });
+        setIsFormVisible(false);
+      } catch (error) {
+        console.error("Error adding leave:", error);
+      }
     }
   };
 
-  // Function to handle editing an existing leave
-  const handleEditLeave = () => {
+  // Edit existing leave
+  const handleEditLeave = async () => {
     if (validateForm()) {
-      const updatedLeaves = [...leaves];
-      updatedLeaves[editIndex] = formData;
+      try {
+        const token = Cookies.get('authToken');
+        if (!token) {
+          console.error("Authentication token not found.");
+          return;
+        }
+        const headers = { Authorization: `Bearer ${token}` };
+        console.log(formData);
+        const updatedLeave = { ...formData, id: leaves[editIndex]._id };
+        console.log(updatedLeave)
+        const response = await axios.put(`http://localhost:3000/api/leaves/${updatedLeave.id}`, updatedLeave, { headers });
+        console.log('.............')
+        const updatedData = response.data;
+        const updatedLeaves = [...leaves];
+        updatedLeaves[editIndex] = updatedData;
+        setLeaves(updatedLeaves);
+        setFormData({ employee_id: '', leave_type: '', from_date: '', to_date: '', status: 'Pending', leave_reason: '' });
+        setIsFormVisible(false);
+        setEditIndex(null);
+      } catch (error) {
+        console.error("Error updating leave:", error);
+      }
+    }
+  };
+
+  // Delete a leave
+  const handleDeleteLeave = async (index) => {
+    const leaveToDelete = leaves[index]._id;
+    try {
+      const token = Cookies.get('authToken');
+      if (!token) {
+        console.error("Authentication token not found.");
+        return;
+      }
+      const headers = { Authorization: `Bearer ${token}` };
+      await axios.delete(`http://localhost:3000/api/leaves/${leaveToDelete}`, { headers });
+      const updatedLeaves = leaves.filter((_, i) => i !== index);
       setLeaves(updatedLeaves);
-      setFormData({ employeeName: '', leaveType: '', startDate: '', endDate: '', status: 'approved' });
-      setIsFormVisible(false);
-      setEditIndex(null); // Clear edit index
+    } catch (error) {
+      console.error("Error deleting leave:", error);
     }
   };
 
-  // Function to handle deleting a leave
-  const handleDeleteLeave = (index) => {
-    const updatedLeaves = leaves.filter((_, i) => i !== index);
-    setLeaves(updatedLeaves);
-    setDropdownIndex(null); // Close dropdown menu after delete
-  };
-
-  // Function to handle search input change
+  // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  // Filter leaves based on search query
-  const filteredLeaves = leaves.filter((leave) =>
-    leave.employeeName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredLeaves = leaves.filter((leave) => {
+    // Ensure employees array is populated
+    if (employees.length === 0) return false;
+
+    // Find the employee by employee_id
+    // Check if employee_id is an object or a string
+    const employee = employees.find((emp) =>
+      (typeof leave.employee_id === 'object' ? leave.employee_id._id : leave.employee_id) === emp._id
+    );
+
+    // If employee is found, filter based on the search query
+    if (employee) {
+      const fullName = `${employee.first_name} ${employee.last_name}`;
+      return fullName.toLowerCase().includes(searchQuery.toLowerCase());
+    }
+
+    // If no matching employee is found, return false
+    return false;
+  });
+
 
   // Paginate the filtered leaves
   const indexOfLastLeave = currentPage * leavesPerPage;
   const indexOfFirstLeave = indexOfLastLeave - leavesPerPage;
   const currentLeaves = filteredLeaves.slice(indexOfFirstLeave, indexOfLastLeave);
+  console.log(currentLeaves)
 
-  // Function to change the page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // Calculate the total number of pages
+  // Calculate total pages
   const totalPages = Math.ceil(filteredLeaves.length / leavesPerPage);
 
-  // Function to calculate the number of days between start and end date
-  const calculateDays = (startDate, endDate) => {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Calculate number of days between start and end date
+  const calculateDays = (from_date, to_date) => {
+    const start = new Date(from_date);
+    const end = new Date(to_date);
+    if (isNaN(start) || isNaN(end)) {
+      return 0; // Invalid date
+    }
     const timeDiff = end - start;
-    return timeDiff >= 0 ? timeDiff / (1000 * 3600 * 24) + 1 : 0; // Adding 1 to include the start day
+    return timeDiff >= 0 ? timeDiff / (1000 * 3600 * 24) + 1 : 0;
   };
 
   return (
@@ -131,11 +234,10 @@ export default function Leaves() {
           </button>
         </div>
       </div>
-
       {/* Popover Form to add or edit a leave */}
       {isFormVisible && (
         <div className="absolute inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 animate__animated animate__fadeIn animate__faster">
-          <div className="bg-white w-96 p-6 rounded-md shadow-lg relative animate__animated animate__zoomIn animate__faster">
+          <div className="bg-white w-1/3 p-6 rounded-md shadow-lg relative animate__animated animate__zoomIn animate__faster">
             {/* Close Icon */}
             <GiCancel
               onClick={() => setIsFormVisible(false)}
@@ -145,75 +247,96 @@ export default function Leaves() {
             <h2 className="text-xl font-semibold mb-4">
               {editIndex !== null ? 'Edit Leave' : 'Add Leave'}
             </h2>
-            <div className="space-y-4">
+            {/* Form Fields Container */}
+            <div className="grid grid-cols-2 gap-4">
               {/* Employee Name Field */}
-              <div>
-                <label htmlFor="employeeName" className="block text-sm font-medium">
+              <div className="col-span-2 sm:col-span-1">
+                <label htmlFor="employee_id" className="block text-sm font-medium">
                   Employee Name
                 </label>
-                <input
-                  type="text"
-                  id="employeeName"
-                  name="employeeName"
-                  value={formData.employeeName}
+                <select
+                  id="employee_id"
+                  name="employee_id"
+                  value={formData.employee_id}
                   onChange={handleInputChange}
-                  placeholder="Enter employee name"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {formErrors.employeeName && <p className="text-red-500 text-sm">Employee name is required</p>}
+                >
+                  <option value="">Select Employee</option>
+                  {employees.map((employee) => (
+                    <option key={employee._id} value={employee._id}>{employee.first_name} {employee.last_name}</option>
+                  ))}
+                </select>
+                {formErrors.employee_id && <p className="text-red-500 text-sm">Employee name is required</p>}
               </div>
 
               {/* Leave Type Field */}
-              <div>
-                <label htmlFor="leaveType" className="block text-sm font-medium">
+              <div className="col-span-2 sm:col-span-1">
+                <label htmlFor="leave_type" className="block text-sm font-medium">
                   Leave Type
                 </label>
-                <input
-                  type="text"
-                  id="leaveType"
-                  name="leaveType"
-                  value={formData.leaveType}
+                <select
+                  id="leave_type"
+                  name="leave_type"
+                  value={formData.leave_type} // Make sure formData.leave_type is correctly updated
                   onChange={handleInputChange}
-                  placeholder="Enter leave type"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {formErrors.leaveType && <p className="text-red-500 text-sm">Leave type is required</p>}
-              </div>
+                >
+                  <option value="Sick Leave">Sick Leave</option>
+                  <option value="Casual Leave">Casual Leave</option>
+                  <option value="Paid Leave">Paid Leave</option>
+                  <option value="Unpaid Leave">Unpaid Leave</option>
+                  <option value="Other">Other</option>
+                </select>
 
+              </div>
               {/* Start Date Field */}
-              <div>
-                <label htmlFor="startDate" className="block text-sm font-medium">
+              <div className="col-span-2 sm:col-span-1">
+                <label htmlFor="from_date" className="block text-sm font-medium">
                   Start Date
                 </label>
                 <input
                   type="date"
-                  id="startDate"
-                  name="startDate"
-                  value={formData.startDate}
+                  id="from_date"
+                  name="from_date"
+                  value={formData.from_date}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                {formErrors.startDate && <p className="text-red-500 text-sm">Start date is required</p>}
+                {formErrors.from_date && <p className="text-red-500 text-sm">Start date is required</p>}
               </div>
-
               {/* End Date Field */}
-              <div>
-                <label htmlFor="endDate" className="block text-sm font-medium">
+              <div className="col-span-2 sm:col-span-1">
+                <label htmlFor="to_date" className="block text-sm font-medium">
                   End Date
                 </label>
                 <input
                   type="date"
-                  id="endDate"
-                  name="endDate"
-                  value={formData.endDate}
+                  id="to_date"
+                  name="to_date"
+                  value={formData.to_date}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                {formErrors.endDate && <p className="text-red-500 text-sm">End date is required</p>}
+                {formErrors.to_date && <p className="text-red-500 text-sm">End date is required</p>}
+              </div>
+              {/* Leave leave_reason Field */}
+              <div className="col-span-2">
+                <label htmlFor="leave_reason" className="block text-sm font-medium">
+                  Leave leave_reason
+                </label>
+                <textarea
+                  id="leave_reason"
+                  name="leave_reason"
+                  value={formData.leave_reason}
+                  onChange={handleInputChange}
+                  placeholder="Enter leave leave_reason"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                ></textarea>
+                {formErrors.leave_reason && <p className="text-red-500 text-sm">Leave leave_reason is required</p>}
               </div>
 
-              {/* Status Field (Dropdown Selection) */}
-              <div>
+              {/* Status Field */}
+              <div className="col-span-2 sm:col-span-1">
                 <label htmlFor="status" className="block text-sm font-medium">
                   Status
                 </label>
@@ -224,96 +347,134 @@ export default function Leaves() {
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md transition duration-200 ease-in-out hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="approved">Approved</option>
-                  <option value="pending">Pending</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Rejected">Rejected</option>
                 </select>
               </div>
+            </div>
 
-              {/* Add and Update Buttons */}
-              <div className="flex gap-4">
-                <button
-                  onClick={editIndex !== null ? handleEditLeave : handleAddLeave}
-                  className="px-6 py-2 bg-slate-500 text-white rounded-md hover:bg-slate-600 transition duration-300 ease-in-out transform hover:scale-105"
-                >
-                  {editIndex !== null ? 'Update' : 'Submit'}
-                </button>
-              </div>
+            {/* Submit and Update Buttons */}
+            <div className="flex gap-4 mt-6">
+              <button
+                onClick={editIndex !== null ? handleEditLeave : handleAddLeave}
+                className="px-6 py-2 bg-slate-500 text-white rounded-md hover:bg-slate-600 transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                {editIndex !== null ? 'Update' : 'Submit'}
+              </button>
             </div>
           </div>
         </div>
-      )}
-
-
+      )
+      }
       {/* Leaves Table */}
-      <table className="min-w-full table-auto border-collapse shadow-lg rounded-md">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="py-2 px-4 text-left text-md font-semibold">Employee Name</th>
-            <th className="py-2 px-4 text-left text-md font-semibold">Leave Type</th>
-            <th className="py-2 px-4 text-left text-md font-semibold">Start Date</th>
-            <th className="py-2 px-4 text-left text-md font-semibold">End Date</th>
-            <th className="py-2 px-4 text-left text-md font-semibold">Number of Days</th> 
-            <th className="py-2 px-4 text-left text-md font-semibold">Status</th>
-            <th className="py-2 px-4 text-left text-md font-semibold">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentLeaves.length > 0 ? (
-            currentLeaves.map((leave, index) => (
-              <tr key={index} className="border-b hover:bg-gray-50 transition duration-200 ease-in-out">
-                <td className="px-4 py-2">{leave.employeeName}</td>
-                <td className="px-4 py-2">{leave.leaveType}</td>
-                <td className="px-4 py-2">{leave.startDate}</td>
-                <td className="px-4 py-2">{leave.endDate}</td>
-                <td className="px-4 py-2">{calculateDays(leave.startDate, leave.endDate)}</td> {/* Display number of days */}
-                <td
-                  className={`px-4 py-2 ${leave.status === 'approved'
-                    ? 'text-green-500'
-                    : leave.status === 'pending'
-                      ? 'text-yellow-500'
-                      : 'text-red-500'
-                    }`}
-                >
-                  {leave.status === 'approved'
-                    ? 'Approved'
-                    : leave.status === 'pending'
-                      ? 'Pending'
-                      : 'Rejected'}
-                </td>
-                <td className="px-4 py-2 text-right">
-                  <div className="relative">
-                    {/* Edit Button - Pencil Icon */}
-                    <button
-                      onClick={() => {
-                        setFormData(leave);
-                        setIsFormVisible(true);
-                        setEditIndex(index); // Set edit mode
-                      }}
-                      className="text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
-                    >
-                      <HiOutlinePencilAlt size={20} />
-                    </button>
+      <div className="overflow-x-auto">
+        <table className="min-w-full table-auto border-collapse shadow-lg rounded-md">
+          <thead>
+            <tr className="bg-gray-100 border-b">
+              <th className="py-2 px-4 text-left text-md font-semibold">
+                Employee Name
+              </th>
+              <th className="py-2 px-4 text-left text-md font-semibold">
+                Leave Type
+              </th>
+              <th className="py-2 px-4 text-left text-md font-semibold">
+                Start Date
+              </th>
+              <th className="py-2 px-4 text-left text-md font-semibold">
+                End Date
+              </th>
+              <th className="py-2 px-4 text-left text-md font-semibold">
+                Number of Days
+              </th>
+              <th className="py-2 px-4 text-left text-md font-semibold">
+                Leave Reason
+              </th>
+              <th className="py-2 px-4 text-left text-md font-semibold">
+                Status
+              </th>
+              <th className="py-2 px-4 text-left text-md font-semibold">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentLeaves.length > 0 ? (
+              currentLeaves.map((leave, index) => {
+                const employee = employees.find(
+                  (emp) => emp._id === leave.employee_id._id
+                );
+                const fullName = employee
+                  ? `${employee.first_name} ${employee.last_name}`
+                  : "Unknown";
 
-                    {/* Delete Button - Trash Icon */}
-                    <button
-                      onClick={() => handleDeleteLeave(index)}
-                      className="ml-4 text-gray-500 hover:text-gray-600 transition duration-200 ease-in-out"
+                return (
+                  <tr
+                    key={index}
+                    className="border-b hover:bg-gray-50 transition duration-200 ease-in-out"
+                  >
+                    <td className="px-4 py-2">{fullName}</td>
+                    <td className="px-4 py-2">{leave.leave_type}</td>
+                    <td className="px-4 py-2">
+                      {new Date(leave.from_date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </td>
+                    <td className="px-4 py-2">
+                      {new Date(leave.to_date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </td>
+                    <td className="px-4 py-2">
+                      {calculateDays(leave.from_date, leave.to_date)}
+                    </td>
+                    <td className="px-4 py-2">{leave.leave_reason} </td>
+                    <td
+                      className={`px-4 py-2 ${leave.status === "Approved"
+                        ? "text-green-500"
+                        : leave.status === "Pending"
+                          ? "text-yellow-500"
+                          : "text-red-500"
+                        }`}
                     >
-                      <HiOutlineTrash size={20} />
-                    </button>
-                  </div>
+                      {leave.status}
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      <button
+                        onClick={() => {
+                          setFormData(leave);
+                          setIsFormVisible(true);
+                          setEditIndex(index);
+
+                        }}
+                        className="text-gray-500 hover:text-blue-600 transition duration-200 ease-in-out"
+                      >
+                        <HiOutlinePencilAlt size={20} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteLeave(index)}
+                        className="ml-4 text-gray-500 hover:text-red-600 transition duration-200 ease-in-out"
+                      >
+                        <HiOutlineTrash size={20} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="7" className="px-4 py-2 text-center">
+                  No leaves found.
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="7" className="px-4 py-2 text-center">
-                No leaves found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      </div>
       {/* Pagination Controls */}
       <div className="flex justify-end mt-4">
         <div className="flex items-center">
@@ -336,6 +497,6 @@ export default function Leaves() {
           </button>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
